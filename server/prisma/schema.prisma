@@ -1,0 +1,159 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum UserRole {
+  RIDER
+  DRIVER
+  ADMIN
+}
+
+enum VehicleCategory {
+  STANDARD
+  COMFORT
+  XL
+  BLACK
+}
+
+enum RideStatus {
+  REQUESTED
+  ACCEPTED
+  ARRIVING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+model User {
+  id               String             @id @default(uuid())
+  supabaseId       String?            @unique
+  email            String             @unique
+  fullName         String
+  phone            String?
+  role             UserRole           @default(RIDER)
+  avatarUrl        String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  driverProfile    DriverProfile?
+  ridesAsRider     Ride[]             @relation("RiderRides")
+  emergencyContact EmergencyContact?
+
+  @@map("users")
+}
+
+model DriverProfile {
+  id              String          @id @default(uuid())
+  userId          String          @unique
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicleMake     String
+  vehicleModel    String
+  vehicleYear     Int
+  vehicleColor    String
+  vehiclePlate    String          @unique
+  vehicleCategory VehicleCategory @default(STANDARD)
+  isOnline        Boolean         @default(false)
+  currentLat      Float           @default(37.7749)
+  currentLng      Float           @default(-122.4194)
+  rating          Float           @default(5.0)
+  totalEarnings   Float           @default(0.0)
+  totalTrips      Int             @default(0)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  ridesAsDriver   Ride[]          @relation("DriverRides")
+
+  @@map("driver_profiles")
+}
+
+model Ride {
+  id              String          @id @default(uuid())
+  riderId         String
+  rider           User            @relation("RiderRides", fields: [riderId], references: [id])
+  driverId        String?
+  driver          DriverProfile?  @relation("DriverRides", fields: [driverId], references: [id])
+  status          RideStatus      @default(REQUESTED)
+  vehicleCategory VehicleCategory @default(STANDARD)
+  pickupAddress   String
+  pickupLat       Float
+  pickupLng       Float
+  dropoffAddress  String
+  dropoffLat      Float
+  dropoffLng      Float
+  fare            Float
+  distanceKm      Float
+  durationMins    Int
+  promoCode       String?
+  discount        Float           @default(0.0)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  stops           RideStop[]
+  payment         Payment?
+  review          Review?
+
+  @@map("rides")
+}
+
+model RideStop {
+  id        String   @id @default(uuid())
+  rideId    String
+  ride      Ride     @relation(fields: [rideId], references: [id], onDelete: Cascade)
+  address   String
+  lat       Float
+  lng       Float
+  stopOrder Int
+  createdAt DateTime @default(now())
+
+  @@map("ride_stops")
+}
+
+model Payment {
+  id                String        @id @default(uuid())
+  rideId            String        @unique
+  ride              Ride          @relation(fields: [rideId], references: [id], onDelete: Cascade)
+  razorpayOrderId   String        @unique
+  razorpayPaymentId String?
+  razorpaySignature String?
+  amount            Float
+  currency          String        @default("INR")
+  status            PaymentStatus @default(PENDING)
+  method            String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  @@map("payments")
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  rideId    String   @unique
+  ride      Ride     @relation(fields: [rideId], references: [id], onDelete: Cascade)
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+
+  @@map("reviews")
+}
+
+model EmergencyContact {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  phone        String
+  relationship String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("emergency_contacts")
+}
