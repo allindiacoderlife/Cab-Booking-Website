@@ -5,11 +5,21 @@ declare global {
   var prisma: PrismaClient | undefined;
 }
 
-export const prisma =
-  global.prisma ||
-  new PrismaClient({
-    log: ["warn", "error"],
-  });
+function createPrismaClient(): PrismaClient {
+  try {
+    return (
+      global.prisma ||
+      new PrismaClient({
+        log: ["warn", "error"],
+      })
+    );
+  } catch (error) {
+    console.warn("⚠️ Prisma client could not initialize with DATABASE_URL, using fallback mode:", error);
+    return new PrismaClient();
+  }
+}
+
+export const prisma = createPrismaClient();
 
 if (process.env.NODE_ENV !== "production") {
   global.prisma = prisma;

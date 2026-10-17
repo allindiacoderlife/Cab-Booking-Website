@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 5000;
 // Middlewares
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: true,
     credentials: true,
   })
 );
@@ -21,8 +21,25 @@ app.use(express.json());
 app.use(morgan("dev"));
 
 // -------------------------------------------------------------
-// Health Check
+// Root & Health Checks
 // -------------------------------------------------------------
+app.get("/", (_req: Request, res: Response) => {
+  res.json({
+    status: "ok",
+    service: "Uber Clone Backend API",
+    message: "Server is running smoothly on Vercel",
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      health: "/api/health",
+      rides: "/api/rides/nearby",
+      requestRide: "POST /api/rides/request",
+      createPaymentOrder: "POST /api/payments/create-order",
+      verifyPayment: "POST /api/payments/verify",
+      emergencySOS: "POST /api/emergency/sos",
+    },
+  });
+});
+
 app.get("/api/health", (_req: Request, res: Response) => {
   res.json({
     status: "ok",
@@ -307,6 +324,11 @@ app.post("/api/emergency/sos", (req: Request, res: Response) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 CabGo Backend Server running on http://localhost:${PORT}`);
-});
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`🚀 CabGo Backend Server running on http://localhost:${PORT}`);
+  });
+}
+
+export default app;
+

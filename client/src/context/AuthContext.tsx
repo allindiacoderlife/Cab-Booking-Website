@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { supabase, signInWithGoogle } from "../lib/supabase";
+import { getApiUrl } from "../lib/api";
 
 export type UserRole = "RIDER" | "DRIVER" | "ADMIN";
 
@@ -84,7 +85,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           };
 
     // Sync with backend Prisma
-    fetch("/api/auth/sync", {
+    fetch(getApiUrl("/api/auth/sync"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(targetUser),
@@ -104,7 +105,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(email)}`,
     };
 
-    fetch("/api/auth/sync", {
+    fetch(getApiUrl("/api/auth/sync"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(loggedUser),
@@ -129,7 +130,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(fullName)}`,
     };
 
-    fetch("/api/auth/sync", {
+    fetch(getApiUrl("/api/auth/sync"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newUser),

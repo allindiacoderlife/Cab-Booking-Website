@@ -1,3 +1,5 @@
+import { getApiUrl } from "./api";
+
 declare global {
   interface Window {
     Razorpay: any;
@@ -18,7 +20,7 @@ export interface PaymentOptions {
 export async function processRazorpayPayment(options: PaymentOptions) {
   try {
     // 1. Request order from backend
-    const res = await fetch("/api/payments/create-order", {
+    const res = await fetch(getApiUrl("/api/payments/create-order"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -53,7 +55,7 @@ export async function processRazorpayPayment(options: PaymentOptions) {
         },
         handler: async function (response: any) {
           // Verify on backend
-          const verifyRes = await fetch("/api/payments/verify", {
+          const verifyRes = await fetch(getApiUrl("/api/payments/verify"), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -87,7 +89,7 @@ export async function processRazorpayPayment(options: PaymentOptions) {
       if (confirmed) {
         const testPaymentId = `pay_rzp_test_${Date.now()}`;
         // Record test payment on server
-        await fetch("/api/payments/verify", {
+        await fetch(getApiUrl("/api/payments/verify"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

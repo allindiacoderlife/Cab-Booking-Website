@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Map } from "./Map";
 import { processRazorpayPayment } from "../lib/razorpay";
+import { getApiUrl } from "../lib/api";
 import {
   Car,
   Clock,
@@ -179,7 +180,7 @@ export function RideSection({
 
         // Submit ride to backend
         try {
-          const res = await fetch("/api/rides/request", {
+          const res = await fetch(getApiUrl("/api/rides/request"), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -230,7 +231,7 @@ export function RideSection({
 
   const handleTriggerSOS = async () => {
     setSosActive(true);
-    fetch("/api/emergency/sos", {
+    fetch(getApiUrl("/api/emergency/sos"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
