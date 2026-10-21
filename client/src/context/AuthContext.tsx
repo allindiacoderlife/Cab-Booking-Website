@@ -84,9 +84,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const handleSupabaseUser = (supaUser: any) => {
+  const handleSupabaseUser = (supaUser: any, overrideRole?: UserRole) => {
     const meta = supaUser.user_metadata || {};
-    const preferredRole: UserRole = meta.role || role || "RIDER";
+    const preferredRole: UserRole =
+      overrideRole || meta.role || (localStorage.getItem("cabgo_auth_role") as UserRole) || "RIDER";
     const mappedUser: User = {
       id: supaUser.id,
       email: supaUser.email || "user@cabgo.com",
@@ -149,6 +150,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Email & Password Login
   const loginEmail = async (email: string, pass: string, preferredRole: UserRole = "RIDER") => {
     try {
+      localStorage.setItem("cabgo_auth_role", preferredRole);
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password: pass,
@@ -176,7 +178,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (data.user) {
-        handleSupabaseUser(data.user);
+        handleSupabaseUser(data.user, preferredRole);
       }
       return { success: true };
     } catch (err: any) {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import {
   User,
@@ -23,11 +23,19 @@ interface ProfileModalProps {
 export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
   const { user, role, switchRole } = useAuth();
 
-  const [fullName, setFullName] = useState(user?.fullName || "Chirag");
+  const [fullName, setFullName] = useState(user?.fullName || "CabGo Customer");
   const [phone, setPhone] = useState(user?.phone || "+91 98765 43210");
   const [avatarUrl, setAvatarUrl] = useState(
     user?.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80"
   );
+
+  useEffect(() => {
+    if (user) {
+      if (user.fullName) setFullName(user.fullName);
+      if (user.phone) setPhone(user.phone);
+      if (user.avatarUrl) setAvatarUrl(user.avatarUrl);
+    }
+  }, [user]);
 
   // Emergency SOS Contact (Use Case 12)
   const [sosName, setSosName] = useState("Ramesh Kumar");

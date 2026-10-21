@@ -29,7 +29,7 @@ interface DriveSectionProps {
 type DriverTripStage = "IDLE" | "OFFER_INCOMING" | "NAVIGATING_TO_PICKUP" | "RIDER_ONBOARD" | "COMPLETED";
 
 export function DriveSection({ onOpenAuth }: DriveSectionProps) {
-  const { user } = useAuth();
+  const { user, role, switchRole } = useAuth();
   const [isOnline, setIsOnline] = useState(true);
   const [tripStage, setTripStage] = useState<DriverTripStage>("OFFER_INCOMING");
   const [countdown, setCountdown] = useState<number>(15);
@@ -134,7 +134,41 @@ export function DriveSection({ onOpenAuth }: DriveSectionProps) {
     <div className="w-full h-[calc(100vh-64px)] flex flex-col lg:flex-row overflow-hidden bg-white dark:bg-[#070709] text-black dark:text-white transition-colors duration-200">
       {/* LEFT PANEL: Driver Console Sidebar */}
       <div className="w-full lg:w-[480px] xl:w-[500px] h-full flex flex-col bg-white dark:bg-[#070709] border-r border-neutral-200 dark:border-neutral-800 shadow-2xl z-20 shrink-0">
-        <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-5">
+        <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
+          {/* Customer Notice if logged in as RIDER */}
+          {user && role === "RIDER" && (
+            <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-center justify-between">
+              <div>
+                <p className="font-bold">Signed in as Customer ({user.fullName})</p>
+                <p className="text-[11px] text-neutral-400">You are previewing the Driver Partner Console</p>
+              </div>
+              <button
+                onClick={() => switchRole("DRIVER")}
+                className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-black text-[11px] transition shrink-0 ml-2 shadow-sm"
+              >
+                Switch to Driver
+              </button>
+            </div>
+          )}
+
+          {/* Guest Notice if not logged in */}
+          {!user && (
+            <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-white text-xs flex items-center justify-between">
+              <div>
+                <p className="font-bold text-emerald-400">Driver Partner Console (Demo Mode)</p>
+                <p className="text-[11px] text-neutral-400">Sign up to become an official CabGo Driver Partner</p>
+              </div>
+              {onOpenAuth && (
+                <button
+                  onClick={() => onOpenAuth("signup")}
+                  className="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-black text-[11px] transition shrink-0 ml-2 shadow-sm"
+                >
+                  Join to Drive
+                </button>
+              )}
+            </div>
+          )}
+
           {/* Top Status & Online Switcher */}
           <div className="p-4 rounded-3xl bg-black dark:bg-[#0f0f13] text-white flex items-center justify-between shadow-xl border border-transparent dark:border-neutral-800">
             <div className="space-y-0.5">
@@ -149,7 +183,11 @@ export function DriveSection({ onOpenAuth }: DriveSectionProps) {
                 </span>
               </div>
               <h2 className="text-base font-black text-white">
-                {user ? user.fullName : "Chirag (Driver Partner)"}
+                {user && role === "DRIVER"
+                  ? `${user.fullName} (Driver Partner)`
+                  : user
+                  ? `${user.fullName} (Customer View)`
+                  : "David Chen (Driver Partner)"}
               </h2>
               <p className="text-[11px] text-neutral-400">Toyota Camry Hybrid · DL 01 AB 1234</p>
             </div>

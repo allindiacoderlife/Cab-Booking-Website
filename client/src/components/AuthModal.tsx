@@ -103,32 +103,42 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
           </div>
         )}
 
-        {/* Role Selector: Rider vs Driver */}
-        <div className="grid grid-cols-2 gap-1.5 p-1.5 rounded-2xl bg-neutral-100 dark:bg-neutral-900/90 mb-5 border border-neutral-200 dark:border-neutral-800">
-          <button
-            type="button"
-            onClick={() => setRole("RIDER")}
-            className={`py-2.5 text-xs font-bold rounded-xl transition flex items-center justify-center gap-2 ${
-              role === "RIDER"
-                ? "bg-white dark:bg-neutral-800 text-black dark:text-emerald-400 shadow-sm border border-neutral-200/80 dark:border-neutral-700"
-                : "text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white"
-            }`}
-          >
-            <User className="h-4 w-4" />
-            <span>Rider</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setRole("DRIVER")}
-            className={`py-2.5 text-xs font-bold rounded-xl transition flex items-center justify-center gap-2 ${
-              role === "DRIVER"
-                ? "bg-white dark:bg-neutral-800 text-black dark:text-emerald-400 shadow-sm border border-neutral-200/80 dark:border-neutral-700"
-                : "text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white"
-            }`}
-          >
-            <Car className="h-4 w-4" />
-            <span>Driver Partner</span>
-          </button>
+        {/* Role Selector: Customer vs Driver */}
+        <div className="mb-5 space-y-1.5">
+          <label className="text-[11px] font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider block">
+            Select Account Type
+          </label>
+          <div className="grid grid-cols-2 gap-1.5 p-1.5 rounded-2xl bg-neutral-100 dark:bg-neutral-900/90 border border-neutral-200 dark:border-neutral-800">
+            <button
+              type="button"
+              onClick={() => setRole("RIDER")}
+              className={`py-2.5 text-xs font-bold rounded-xl transition flex items-center justify-center gap-2 ${
+                role === "RIDER"
+                  ? "bg-white dark:bg-neutral-800 text-black dark:text-emerald-400 shadow-sm border border-neutral-200/80 dark:border-neutral-700"
+                  : "text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white"
+              }`}
+            >
+              <User className="h-4 w-4 text-emerald-500" />
+              <span>Customer (Rider)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setRole("DRIVER")}
+              className={`py-2.5 text-xs font-bold rounded-xl transition flex items-center justify-center gap-2 ${
+                role === "DRIVER"
+                  ? "bg-white dark:bg-neutral-800 text-black dark:text-emerald-400 shadow-sm border border-neutral-200/80 dark:border-neutral-700"
+                  : "text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white"
+              }`}
+            >
+              <Car className="h-4 w-4 text-emerald-500" />
+              <span>Driver Partner</span>
+            </button>
+          </div>
+          <p className="text-[11px] text-neutral-500 dark:text-neutral-400 px-1">
+            {role === "RIDER"
+              ? "Book rides across Delhi NCR and pay with Razorpay or Cash."
+              : "Accept trip requests and collect guaranteed direct payouts."}
+          </p>
         </div>
 
         {/* Continue with Google */}
