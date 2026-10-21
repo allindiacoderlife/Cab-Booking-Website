@@ -22,7 +22,7 @@ const COMPLIMENT_BADGES = [
 export function RatingModal({
   isOpen,
   onClose,
-  rideId = "UBER-TRIP",
+  rideId = "CABGO-TRIP",
   driverName = "David Chen",
   onSubmitted,
 }: RatingModalProps) {
@@ -73,33 +73,33 @@ export function RatingModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
-      <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden p-6 sm:p-8 text-black border border-neutral-200">
+      <div className="relative w-full max-w-md bg-white dark:bg-neutral-900 rounded-3xl shadow-2xl overflow-hidden p-6 sm:p-8 text-black dark:text-white border border-neutral-200 dark:border-neutral-800 transition-colors">
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-full hover:bg-neutral-100 text-neutral-400 hover:text-black transition"
+          className="absolute top-5 right-5 p-2 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-400 hover:text-black dark:hover:text-white transition"
         >
           <X className="h-5 w-5" />
         </button>
 
         {submitted ? (
           <div className="py-8 text-center space-y-3 animate-in zoom-in-95">
-            <div className="h-16 w-16 mx-auto rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center">
+            <div className="h-16 w-16 mx-auto rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
               <Check className="h-8 w-8" />
             </div>
-            <h3 className="text-2xl font-black">Thank you!</h3>
-            <p className="text-xs text-neutral-500">
+            <h3 className="text-2xl font-black text-black dark:text-white">Thank you!</h3>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400">
               Your rating and compliments have been shared with {driverName}.
             </p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="text-center space-y-1">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100 text-xs font-bold text-neutral-700 mb-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100 dark:bg-neutral-800 text-xs font-bold text-neutral-700 dark:text-emerald-400 mb-2">
                 <Sparkles className="h-3.5 w-3.5 text-amber-500" />
                 Rate Your Trip
               </div>
-              <h2 className="text-2xl font-black text-black">How was your ride with {driverName}?</h2>
-              <p className="text-xs text-neutral-500">Trip #{rideId}</p>
+              <h2 className="text-2xl font-black text-black dark:text-white">How was your ride with {driverName}?</h2>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">Trip #{rideId}</p>
             </div>
 
             {/* Interactive Stars */}
@@ -117,7 +117,7 @@ export function RatingModal({
                     className={`h-9 w-9 transition-colors ${
                       star <= (hoverRating || rating)
                         ? "fill-amber-400 text-amber-400"
-                        : "text-neutral-300"
+                        : "text-neutral-300 dark:text-neutral-700"
                     }`}
                   />
                 </button>
@@ -126,7 +126,7 @@ export function RatingModal({
 
             {/* Compliment Badges */}
             <div className="space-y-2">
-              <label className="block text-xs font-bold text-neutral-700">Give a compliment</label>
+              <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300">Give a compliment</label>
               <div className="flex flex-wrap gap-2">
                 {COMPLIMENT_BADGES.map((badge) => {
                   const isSelected = selectedBadges.includes(badge);
@@ -137,8 +137,8 @@ export function RatingModal({
                       onClick={() => toggleBadge(badge)}
                       className={`px-3 py-1.5 rounded-full text-xs font-semibold transition flex items-center gap-1.5 ${
                         isSelected
-                          ? "bg-black text-white"
-                          : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
+                          ? "bg-black dark:bg-emerald-500 text-white dark:text-black"
+                          : "bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700"
                       }`}
                     >
                       {isSelected && <ThumbsUp className="h-3 w-3" />}
@@ -151,7 +151,7 @@ export function RatingModal({
 
             {/* Written Comment */}
             <div>
-              <label className="block text-xs font-bold text-neutral-700 mb-1">
+              <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300 mb-1">
                 Add a comment (optional)
               </label>
               <textarea
@@ -159,14 +159,14 @@ export function RatingModal({
                 onChange={(e) => setComment(e.target.value)}
                 placeholder="Share more details about your experience..."
                 rows={3}
-                className="w-full p-3 rounded-2xl bg-neutral-100 border border-transparent focus:border-black text-xs text-black placeholder-neutral-400 focus:outline-none resize-none"
+                className="w-full p-3 rounded-2xl bg-neutral-100 dark:bg-neutral-800 border border-transparent focus:border-black dark:focus:border-emerald-400 text-xs text-black dark:text-white placeholder-neutral-400 focus:outline-none resize-none"
               />
             </div>
 
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-3.5 rounded-xl bg-black hover:bg-neutral-800 disabled:opacity-50 text-white font-extrabold text-xs transition shadow-lg"
+              className="w-full py-3.5 rounded-xl bg-black dark:bg-emerald-500 hover:bg-neutral-800 dark:hover:bg-emerald-600 disabled:opacity-50 text-white dark:text-black font-extrabold text-xs transition shadow-lg"
             >
               {isSubmitting ? "Submitting..." : "Submit Review"}
             </button>

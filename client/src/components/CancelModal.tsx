@@ -18,7 +18,7 @@ const CANCELLATION_REASONS = [
   "Found alternative transportation",
 ];
 
-export function CancelModal({ isOpen, onClose, rideId = "UBER-CURRENT", onCancelled }: CancelModalProps) {
+export function CancelModal({ isOpen, onClose, rideId = "CABGO-CURRENT", onCancelled }: CancelModalProps) {
   const [selectedReason, setSelectedReason] = useState(CANCELLATION_REASONS[0]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -42,36 +42,36 @@ export function CancelModal({ isOpen, onClose, rideId = "UBER-CURRENT", onCancel
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
-      <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden p-6 sm:p-8 text-black border border-neutral-200 space-y-5">
+      <div className="relative w-full max-w-md bg-white dark:bg-neutral-900 rounded-3xl shadow-2xl overflow-hidden p-6 sm:p-8 text-black dark:text-white border border-neutral-200 dark:border-neutral-800 space-y-5 transition-colors">
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-full hover:bg-neutral-100 text-neutral-400 hover:text-black transition"
+          className="absolute top-5 right-5 p-2 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-400 hover:text-black dark:hover:text-white transition"
         >
           <X className="h-5 w-5" />
         </button>
 
         <div className="space-y-1">
-          <h2 className="text-2xl font-black text-black">Cancel this ride?</h2>
-          <p className="text-xs text-neutral-500">Trip #{rideId}</p>
+          <h2 className="text-2xl font-black text-black dark:text-white">Cancel this ride?</h2>
+          <p className="text-xs text-neutral-500 dark:text-neutral-400">Trip #{rideId}</p>
         </div>
 
         {/* Free Cancellation Banner */}
-        <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2.5 font-medium">
-          <ShieldCheck className="h-5 w-5 text-emerald-600 shrink-0" />
+        <div className="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs flex items-center gap-2.5 font-medium">
+          <ShieldCheck className="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
           <span>Zero Cancellation Fee: You are cancelling within the free 2-minute window.</span>
         </div>
 
         {/* Reason selector */}
         <div className="space-y-2">
-          <label className="block text-xs font-bold text-neutral-700">Select a reason:</label>
+          <label className="block text-xs font-bold text-neutral-700 dark:text-neutral-300">Select a reason:</label>
           <div className="space-y-1.5 max-h-52 overflow-y-auto pr-1">
             {CANCELLATION_REASONS.map((reason) => (
               <label
                 key={reason}
                 className={`flex items-center gap-3 p-3 rounded-xl border text-xs font-semibold cursor-pointer transition ${
                   selectedReason === reason
-                    ? "border-black bg-neutral-50 text-black"
-                    : "border-neutral-200 hover:border-neutral-300 text-neutral-600"
+                    ? "border-black dark:border-emerald-400 bg-neutral-50 dark:bg-neutral-800 text-black dark:text-white"
+                    : "border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700 text-neutral-600 dark:text-neutral-400"
                 }`}
               >
                 <input
@@ -79,7 +79,7 @@ export function CancelModal({ isOpen, onClose, rideId = "UBER-CURRENT", onCancel
                   name="cancel_reason"
                   checked={selectedReason === reason}
                   onChange={() => setSelectedReason(reason)}
-                  className="accent-black"
+                  className="accent-black dark:accent-emerald-400"
                 />
                 <span>{reason}</span>
               </label>
@@ -91,7 +91,7 @@ export function CancelModal({ isOpen, onClose, rideId = "UBER-CURRENT", onCancel
           <button
             type="button"
             onClick={onClose}
-            className="py-3 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-black font-bold text-xs transition"
+            className="py-3 rounded-xl bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-black dark:text-white font-bold text-xs transition"
           >
             Keep Ride
           </button>
@@ -99,7 +99,7 @@ export function CancelModal({ isOpen, onClose, rideId = "UBER-CURRENT", onCancel
             type="button"
             disabled={isSubmitting}
             onClick={handleConfirmCancel}
-            className="py-3 rounded-xl bg-rose-600 hover:bg-rose-700 disabled:opacity-50 text-white font-bold text-xs transition shadow-md"
+            className="py-3 rounded-xl bg-rose-600 hover:bg-rose-700 disabled:opacity-50 text-white font-bold text-xs transition shadow-sm"
           >
             {isSubmitting ? "Cancelling..." : "Cancel Ride"}
           </button>

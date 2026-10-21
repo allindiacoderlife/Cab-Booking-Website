@@ -42,8 +42,8 @@ export async function processRazorpayPayment(options: PaymentOptions) {
         key: orderData.key,
         amount: orderData.amount,
         currency: orderData.currency,
-        name: "Uber",
-        description: `Ride Fare Payment #${options.rideId || "CAB"}`,
+        name: "CabGo",
+        description: `Ride Fare Payment #${options.rideId || "CABGO"}`,
         order_id: orderData.orderId,
         prefill: {
           name: options.riderName,
@@ -51,7 +51,7 @@ export async function processRazorpayPayment(options: PaymentOptions) {
           contact: options.riderPhone || "+919876543210",
         },
         theme: {
-          color: "#000000",
+          color: "#10b981",
         },
         handler: async function (response: any) {
           // Verify on backend
@@ -83,7 +83,7 @@ export async function processRazorpayPayment(options: PaymentOptions) {
     } else {
       // 3. Simulated Razorpay Checkout Modal (Sandbox demonstration)
       const confirmed = window.confirm(
-        `💳 [Razorpay Test Mode]\n\nMerchant: Uber Ride Payments\nAmount: ₹${options.amount} ${options.currency || "INR"}\nRide ID: ${options.rideId || "NEW"}\n\nClick OK to simulate successful Razorpay payment authorization.`
+        `💳 [Razorpay Test Mode]\n\nMerchant: CabGo Ride Payments\nAmount: ₹${options.amount} ${options.currency || "INR"}\nRide ID: ${options.rideId || "NEW"}\n\nClick OK to simulate successful Razorpay payment authorization.`
       );
 
       if (confirmed) {

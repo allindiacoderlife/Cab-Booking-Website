@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
+@variant dark (&:where(.dark, .dark *));
+
 @layer base {
   :root {
-    --font-uber: 'UberMoveText', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 
   body {
-    font-family: var(--font-uber);
-    background-color: #ffffff;
-    color: #000000;
+    font-family: var(--font-sans);
     margin: 0;
     padding: 0;
     -webkit-font-smoothing: antialiased;
@@ -22,9 +22,29 @@
   }
 }
 
-/* Custom scrollbars and map styles */
+/* Custom map container and scrollbars */
 .leaflet-container {
   width: 100%;
   height: 100%;
-  border-radius: 1rem;
+}
+
+/* Dark mode map tile filter for sleek night navigation */
+.dark .leaflet-tile-pane {
+  filter: brightness(0.85) invert(1) contrast(2.8) hue-rotate(200deg) saturate(0.35);
+}
+
+/* Sleek minimalist scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(150, 150, 150, 0.3);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(150, 150, 150, 0.6);
 }

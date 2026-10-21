@@ -41,7 +41,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Real-world flow: User starts as null (guest / unauthenticated) unless a valid session exists
   const [user, setUser] = useState<User | null>(() => {
     try {
-      const saved = localStorage.getItem("uber_auth_user");
+      const saved = localStorage.getItem("cabgo_auth_user") || localStorage.getItem("uber_auth_user");
       return saved ? JSON.parse(saved) : null;
     } catch {
       return null;
@@ -50,7 +50,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const [role, setRole] = useState<UserRole>(() => {
     try {
-      const savedRole = localStorage.getItem("uber_auth_role") as UserRole;
+      const savedRole = (localStorage.getItem("cabgo_auth_role") || localStorage.getItem("uber_auth_role")) as UserRole;
       return savedRole || "RIDER";
     } catch {
       return "RIDER";
@@ -74,6 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         handleSupabaseUser(session.user);
       } else if (_event === "SIGNED_OUT") {
         setUser(null);
+        localStorage.removeItem("cabgo_auth_user");
         localStorage.removeItem("uber_auth_user");
       }
     });
@@ -88,8 +89,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const preferredRole: UserRole = meta.role || role || "RIDER";
     const mappedUser: User = {
       id: supaUser.id,
-      email: supaUser.email || "user@uber.com",
-      fullName: meta.full_name || meta.name || supaUser.email?.split("@")[0] || "Uber User",
+      email: supaUser.email || "user@cabgo.com",
+      fullName: meta.full_name || meta.name || supaUser.email?.split("@")[0] || "CabGo User",
       phone: meta.phone || supaUser.phone || "+91 98765 43210",
       role: preferredRole,
       avatarUrl:
@@ -120,11 +121,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setRole(newRole);
     try {
       if (newUser) {
-        localStorage.setItem("uber_auth_user", JSON.stringify(newUser));
+        localStorage.setItem("cabgo_auth_user", JSON.stringify(newUser));
       } else {
+        localStorage.removeItem("cabgo_auth_user");
         localStorage.removeItem("uber_auth_user");
       }
-      localStorage.setItem("uber_auth_role", newRole);
+      localStorage.setItem("cabgo_auth_role", newRole);
     } catch {
       // ignore
     }
@@ -133,7 +135,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Google OAuth flow
   const loginGoogle = async (preferredRole: UserRole = "RIDER") => {
     try {
-      localStorage.setItem("uber_auth_role", preferredRole);
+      localStorage.setItem("cabgo_auth_role", preferredRole);
       const res = await signInWithGoogle();
       if (res.error) {
         return { success: false, error: res.error.message };
@@ -239,7 +241,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const switchRole = (newRole: UserRole) => {
     setRole(newRole);
     try {
-      localStorage.setItem("uber_auth_role", newRole);
+      localStorage.setItem("cabgo_auth_role", newRole);
     } catch {
       // ignore
     }
@@ -262,7 +264,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (demoRole === "DRIVER") {
       const demoDriver: User = {
         id: "usr_david_driver",
-        email: "david.chen@driver.uber.com",
+        email: "david.chen@driver.cabgo.com",
         fullName: "David Chen",
         phone: "+91 98765 12345",
         role: "DRIVER",
@@ -272,7 +274,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } else {
       const demoRider: User = {
         id: "usr_alex_rider",
-        email: "alex.morgan@rider.uber.com",
+        email: "alex.morgan@rider.cabgo.com",
         fullName: "Alex Morgan",
         phone: "+91 98765 43210",
         role: "RIDER",

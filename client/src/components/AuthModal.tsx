@@ -68,41 +68,50 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-      <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden p-6 sm:p-8 text-black border border-neutral-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in">
+      <div className="relative w-full max-w-md bg-white dark:bg-[#0f0f13] rounded-3xl shadow-2xl overflow-hidden p-6 sm:p-8 text-black dark:text-white border border-neutral-200 dark:border-neutral-800 transition-colors">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-6 right-6 p-2 rounded-full hover:bg-neutral-100 transition text-neutral-500 hover:text-black"
+          className="absolute top-6 right-6 p-2 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 transition text-neutral-500 hover:text-black dark:hover:text-white"
         >
           <X className="h-5 w-5" />
         </button>
 
-        {/* Uber Wordmark */}
-        <div className="text-2xl font-black tracking-tighter mb-4 text-black">Uber</div>
+        {/* CabGo Wordmark */}
+        <div className="flex items-center gap-2 mb-4">
+          <div className="h-7 w-7 rounded-lg bg-emerald-500 text-black flex items-center justify-center font-black text-xs">
+            <Car className="h-4 w-4" />
+          </div>
+          <div className="text-2xl font-black tracking-tight text-black dark:text-white">
+            Cab<span className="text-emerald-500">Go</span>
+          </div>
+        </div>
 
-        <h2 className="text-2xl font-black text-black tracking-tight mb-2">
-          {mode === "login" ? "Sign in to your account" : "Create your Uber account"}
+        <h2 className="text-2xl font-black text-black dark:text-white tracking-tight mb-2">
+          {mode === "login" ? "Sign in to your account" : "Create your CabGo account"}
         </h2>
-        <p className="text-xs text-neutral-500 mb-6">
+        <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-6">
           Access your rides, earnings, and trip receipts with Supabase authentication.
         </p>
 
         {/* Error Alert */}
         {errorMessage && (
-          <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
+          <div className="mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-400 text-xs flex items-center gap-2">
             <AlertCircle className="h-4 w-4 shrink-0" />
             <span>{errorMessage}</span>
           </div>
         )}
 
         {/* Role Selector: Rider vs Driver */}
-        <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-neutral-100 mb-5">
+        <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-neutral-100 dark:bg-neutral-850 mb-5 border border-transparent dark:border-neutral-800">
           <button
             type="button"
             onClick={() => setRole("RIDER")}
             className={`py-2 text-xs font-bold rounded-lg transition flex items-center justify-center gap-1.5 ${
-              role === "RIDER" ? "bg-white text-black shadow-sm" : "text-neutral-500 hover:text-black"
+              role === "RIDER"
+                ? "bg-white dark:bg-neutral-750 text-black dark:text-white shadow-sm"
+                : "text-neutral-500 hover:text-black dark:hover:text-white"
             }`}
           >
             <User className="h-3.5 w-3.5" />
@@ -112,7 +121,9 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
             type="button"
             onClick={() => setRole("DRIVER")}
             className={`py-2 text-xs font-bold rounded-lg transition flex items-center justify-center gap-1.5 ${
-              role === "DRIVER" ? "bg-white text-black shadow-sm" : "text-neutral-500 hover:text-black"
+              role === "DRIVER"
+                ? "bg-white dark:bg-neutral-750 text-black dark:text-white shadow-sm"
+                : "text-neutral-500 hover:text-black dark:hover:text-white"
             }`}
           >
             <Car className="h-3.5 w-3.5" />
@@ -125,7 +136,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
           type="button"
           disabled={loading}
           onClick={handleGoogleAuth}
-          className="w-full py-3.5 px-4 rounded-xl border border-neutral-300 hover:border-black bg-white font-bold text-xs flex items-center justify-center gap-3 transition shadow-sm mb-4 disabled:opacity-50"
+          className="w-full py-3.5 px-4 rounded-xl border border-neutral-300 dark:border-neutral-700 hover:border-black dark:hover:border-emerald-500 bg-white dark:bg-neutral-850 font-bold text-xs flex items-center justify-center gap-3 transition shadow-sm mb-4 disabled:opacity-50 text-black dark:text-white"
         >
           <svg className="h-4 w-4" viewBox="0 0 24 24">
             <path
@@ -151,9 +162,9 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
         {/* Divider */}
         <div className="relative my-4 text-center">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-neutral-200" />
+            <div className="w-full border-t border-neutral-200 dark:border-neutral-800" />
           </div>
-          <span className="relative bg-white px-3 text-[11px] uppercase tracking-wider text-neutral-400 font-bold">
+          <span className="relative bg-white dark:bg-[#0f0f13] px-3 text-[11px] uppercase tracking-wider text-neutral-400 font-bold">
             or with email
           </span>
         </div>
@@ -168,7 +179,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Full name"
-                  className="w-full px-4 py-3 rounded-xl bg-neutral-100 border border-transparent focus:border-black text-xs font-semibold text-black placeholder-neutral-500 focus:outline-none"
+                  className="w-full px-4 py-3 rounded-xl bg-neutral-100 dark:bg-neutral-850 border border-transparent focus:border-black dark:focus:border-emerald-500 text-xs font-semibold text-black dark:text-white placeholder-neutral-500 focus:outline-none"
                   required
                 />
               </div>
@@ -178,7 +189,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="Phone number (+91 98765 43210)"
-                  className="w-full px-4 py-3 rounded-xl bg-neutral-100 border border-transparent focus:border-black text-xs font-semibold text-black placeholder-neutral-500 focus:outline-none"
+                  className="w-full px-4 py-3 rounded-xl bg-neutral-100 dark:bg-neutral-850 border border-transparent focus:border-black dark:focus:border-emerald-500 text-xs font-semibold text-black dark:text-white placeholder-neutral-500 focus:outline-none"
                   required
                 />
               </div>
@@ -191,7 +202,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="name@example.com"
-              className="w-full px-4 py-3 rounded-xl bg-neutral-100 border border-transparent focus:border-black text-xs font-semibold text-black placeholder-neutral-500 focus:outline-none"
+              className="w-full px-4 py-3 rounded-xl bg-neutral-100 dark:bg-neutral-850 border border-transparent focus:border-black dark:focus:border-emerald-500 text-xs font-semibold text-black dark:text-white placeholder-neutral-500 focus:outline-none"
               required
             />
           </div>
@@ -202,7 +213,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
-              className="w-full px-4 py-3 rounded-xl bg-neutral-100 border border-transparent focus:border-black text-xs font-semibold text-black placeholder-neutral-500 focus:outline-none"
+              className="w-full px-4 py-3 rounded-xl bg-neutral-100 dark:bg-neutral-850 border border-transparent focus:border-black dark:focus:border-emerald-500 text-xs font-semibold text-black dark:text-white placeholder-neutral-500 focus:outline-none"
               required
             />
           </div>
@@ -210,7 +221,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 rounded-xl bg-black hover:bg-neutral-800 text-white font-bold text-xs flex items-center justify-center gap-2 transition shadow-lg mt-2 disabled:opacity-50"
+            className="w-full py-3.5 rounded-xl bg-black dark:bg-emerald-500 hover:bg-neutral-800 dark:hover:bg-emerald-400 text-white dark:text-black font-black text-xs flex items-center justify-center gap-2 transition shadow-lg mt-2 disabled:opacity-50"
           >
             <span>{loading ? "Processing..." : mode === "login" ? "Sign In" : "Create Account"}</span>
             <ArrowRight className="h-4 w-4" />
@@ -218,7 +229,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
         </form>
 
         {/* Quick Demo Shortcuts for instant testing */}
-        <div className="mt-4 pt-3 border-t border-neutral-100">
+        <div className="mt-4 pt-3 border-t border-neutral-100 dark:border-neutral-800">
           <span className="text-[10px] uppercase font-bold text-neutral-400 block mb-2">
             One-Click Testing Accounts
           </span>
@@ -226,14 +237,14 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
             <button
               type="button"
               onClick={() => handleQuickDemo("RIDER")}
-              className="p-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-800 text-[11px] font-bold transition flex items-center justify-center gap-1"
+              className="p-2 rounded-xl bg-neutral-100 dark:bg-neutral-850 hover:bg-neutral-200 dark:hover:bg-neutral-800 text-neutral-800 dark:text-neutral-200 text-[11px] font-bold transition flex items-center justify-center gap-1"
             >
               <User className="h-3 w-3" /> Demo Rider (Alex)
             </button>
             <button
               type="button"
               onClick={() => handleQuickDemo("DRIVER")}
-              className="p-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-800 text-[11px] font-bold transition flex items-center justify-center gap-1"
+              className="p-2 rounded-xl bg-neutral-100 dark:bg-neutral-850 hover:bg-neutral-200 dark:hover:bg-neutral-800 text-neutral-800 dark:text-neutral-200 text-[11px] font-bold transition flex items-center justify-center gap-1"
             >
               <Car className="h-3 w-3" /> Demo Driver (David)
             </button>
@@ -241,14 +252,14 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
         </div>
 
         {/* Switch mode */}
-        <div className="mt-4 text-center text-xs text-neutral-500">
+        <div className="mt-4 text-center text-xs text-neutral-500 dark:text-neutral-400">
           {mode === "login" ? (
             <p>
               Don't have an account?{" "}
               <button
                 type="button"
                 onClick={() => setMode("signup")}
-                className="font-bold text-black hover:underline"
+                className="font-bold text-black dark:text-emerald-400 hover:underline"
               >
                 Sign up
               </button>
@@ -259,7 +270,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
               <button
                 type="button"
                 onClick={() => setMode("login")}
-                className="font-bold text-black hover:underline"
+                className="font-bold text-black dark:text-emerald-400 hover:underline"
               >
                 Log in
               </button>

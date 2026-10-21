@@ -20,7 +20,7 @@ import { getApiUrl } from "../lib/api";
 
 const FAQ_ITEMS = [
   {
-    q: "How does Uber pricing work?",
+    q: "How does CabGo pricing work?",
     a: "Fares are calculated based on base fare, distance traveled (per km), trip duration, and local taxes. High demand surge pricing may apply during peak traffic hours.",
   },
   {
@@ -111,17 +111,17 @@ export function SupportSection() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12 animate-in fade-in">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12 animate-in fade-in text-black dark:text-white transition-colors duration-200">
       {/* Hero Banner */}
       <div className="text-center max-w-2xl mx-auto space-y-4">
-        <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-neutral-100 text-xs font-bold text-black border border-neutral-200">
+        <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-xs font-bold text-black dark:text-emerald-400 border border-neutral-200 dark:border-neutral-700">
           <HelpCircle className="h-4 w-4" />
-          <span>Uber 24/7 Help & Support Center</span>
+          <span>CabGo 24/7 Help & Support Center</span>
         </div>
-        <h1 className="text-4xl sm:text-5xl font-black text-black tracking-tight">
+        <h1 className="text-4xl sm:text-5xl font-black text-black dark:text-white tracking-tight">
           How can we help you today?
         </h1>
-        <p className="text-sm text-neutral-600">
+        <p className="text-sm text-neutral-600 dark:text-neutral-400">
           Search frequently asked questions or submit an official inquiry directly to our priority resolution team.
         </p>
 
@@ -133,39 +133,39 @@ export function SupportSection() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search help topics (e.g., refund, lost item, cancellation)"
-            className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-neutral-100 hover:bg-neutral-150 focus:bg-white border border-transparent focus:border-black text-sm text-black placeholder-neutral-500 focus:outline-none transition shadow-sm"
+            className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-150 focus:bg-white dark:focus:bg-neutral-800 border border-transparent dark:border-neutral-700 focus:border-black dark:focus:border-emerald-400 text-sm text-black dark:text-white placeholder-neutral-500 dark:placeholder-neutral-400 focus:outline-none transition shadow-sm"
           />
         </div>
       </div>
 
       {/* Grid: 3 Quick Help Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="p-6 rounded-3xl bg-neutral-50 border border-neutral-200 space-y-3">
-          <div className="h-10 w-10 rounded-2xl bg-black text-white flex items-center justify-center">
+        <div className="p-6 rounded-3xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 space-y-3">
+          <div className="h-10 w-10 rounded-2xl bg-black dark:bg-emerald-500 text-white dark:text-black flex items-center justify-center">
             <Car className="h-5 w-5" />
           </div>
-          <h3 className="text-base font-bold text-black">A trip issue or refund</h3>
-          <p className="text-xs text-neutral-600 leading-relaxed">
+          <h3 className="text-base font-bold text-black dark:text-white">A trip issue or refund</h3>
+          <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
             Report incorrect fare charges, driver route deviations, or unrequested tolls.
           </p>
         </div>
 
-        <div className="p-6 rounded-3xl bg-neutral-50 border border-neutral-200 space-y-3">
-          <div className="h-10 w-10 rounded-2xl bg-black text-white flex items-center justify-center">
+        <div className="p-6 rounded-3xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 space-y-3">
+          <div className="h-10 w-10 rounded-2xl bg-black dark:bg-emerald-500 text-white dark:text-black flex items-center justify-center">
             <FileQuestion className="h-5 w-5" />
           </div>
-          <h3 className="text-base font-bold text-black">Lost & Found Property</h3>
-          <p className="text-xs text-neutral-600 leading-relaxed">
+          <h3 className="text-base font-bold text-black dark:text-white">Lost & Found Property</h3>
+          <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
             Left an item behind? Connect directly with the driver or initiate our concierge recovery service.
           </p>
         </div>
 
-        <div className="p-6 rounded-3xl bg-neutral-50 border border-neutral-200 space-y-3">
-          <div className="h-10 w-10 rounded-2xl bg-black text-white flex items-center justify-center">
+        <div className="p-6 rounded-3xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 space-y-3">
+          <div className="h-10 w-10 rounded-2xl bg-black dark:bg-emerald-500 text-white dark:text-black flex items-center justify-center">
             <ShieldCheck className="h-5 w-5" />
           </div>
-          <h3 className="text-base font-bold text-black">Safety & Emergency</h3>
-          <p className="text-xs text-neutral-600 leading-relaxed">
+          <h3 className="text-base font-bold text-black dark:text-white">Safety & Emergency</h3>
+          <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
             24/7 dedicated safety response line for road incidents, medical emergencies, or safety concerns.
           </p>
         </div>
@@ -175,24 +175,24 @@ export function SupportSection() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
         {/* Left: Submit Support Ticket Form */}
         <div className="lg:col-span-6 space-y-6">
-          <div className="p-8 rounded-3xl bg-white border border-neutral-200 shadow-sm space-y-6">
+          <div className="p-8 rounded-3xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm space-y-6">
             <div className="space-y-1">
-              <h2 className="text-2xl font-black text-black">Submit a Ticket</h2>
-              <p className="text-xs text-neutral-500">
+              <h2 className="text-2xl font-black text-black dark:text-white">Submit a Ticket</h2>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">
                 Our support team typically responds within 2 hours.
               </p>
             </div>
 
             {submittedTicket && (
-              <div className="p-5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 space-y-2 animate-in zoom-in-95">
-                <div className="flex items-center gap-2 font-bold text-sm text-emerald-800">
-                  <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+              <div className="p-5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200 space-y-2 animate-in zoom-in-95">
+                <div className="flex items-center gap-2 font-bold text-sm text-emerald-800 dark:text-emerald-300">
+                  <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                   <span>Ticket Logged: #{submittedTicket.id}</span>
                 </div>
-                <p className="text-xs text-emerald-700">
+                <p className="text-xs text-emerald-700 dark:text-emerald-300">
                   We have received your request regarding <strong>{submittedTicket.subject}</strong>. A confirmation has been registered to your profile.
                 </p>
-                <div className="text-[11px] text-emerald-600 flex items-center gap-2 pt-1">
+                <div className="text-[11px] text-emerald-600 dark:text-emerald-400 flex items-center gap-2 pt-1">
                   <Clock className="h-3.5 w-3.5" />
                   <span>Status: OPEN · Expected turnaround &lt; 2 hrs</span>
                 </div>
@@ -201,11 +201,11 @@ export function SupportSection() {
 
             <form onSubmit={handleSubmitTicket} className="space-y-4">
               <div>
-                <label className="text-xs font-bold text-neutral-700">Inquiry Category</label>
+                <label className="text-xs font-bold text-neutral-700 dark:text-neutral-300">Inquiry Category</label>
                 <select
                   value={category}
                   onChange={(e: any) => setCategory(e.target.value)}
-                  className="w-full mt-1.5 px-3.5 py-3 rounded-xl bg-neutral-100 hover:bg-neutral-150 border border-transparent focus:border-black text-xs font-semibold text-black focus:outline-none transition"
+                  className="w-full mt-1.5 px-3.5 py-3 rounded-xl bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-150 border border-transparent dark:border-neutral-700 focus:border-black dark:focus:border-emerald-400 text-xs font-semibold text-black dark:text-white focus:outline-none transition"
                 >
                   <option value="TRIP_FARE">Trip Fare, Billing & Razorpay Dispute</option>
                   <option value="LOST_ITEM">Lost & Found Property Recovery</option>
@@ -216,44 +216,44 @@ export function SupportSection() {
               </div>
 
               <div>
-                <label className="text-xs font-bold text-neutral-700">Trip Reference ID (Optional)</label>
+                <label className="text-xs font-bold text-neutral-700 dark:text-neutral-300">Trip Reference ID (Optional)</label>
                 <input
                   type="text"
                   value={rideId}
                   onChange={(e) => setRideId(e.target.value)}
-                  placeholder="e.g. UBER-389201"
-                  className="w-full mt-1.5 px-3.5 py-3 rounded-xl bg-neutral-100 hover:bg-neutral-150 border border-transparent focus:border-black text-xs font-semibold text-black focus:outline-none transition"
+                  placeholder="e.g. CABGO-389201"
+                  className="w-full mt-1.5 px-3.5 py-3 rounded-xl bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-150 border border-transparent dark:border-neutral-700 focus:border-black dark:focus:border-emerald-400 text-xs font-semibold text-black dark:text-white placeholder-neutral-400 focus:outline-none transition"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-bold text-neutral-700">Subject</label>
+                <label className="text-xs font-bold text-neutral-700 dark:text-neutral-300">Subject</label>
                 <input
                   type="text"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
                   placeholder="Brief summary of the issue"
                   required
-                  className="w-full mt-1.5 px-3.5 py-3 rounded-xl bg-neutral-100 hover:bg-neutral-150 border border-transparent focus:border-black text-xs font-semibold text-black focus:outline-none transition"
+                  className="w-full mt-1.5 px-3.5 py-3 rounded-xl bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-150 border border-transparent dark:border-neutral-700 focus:border-black dark:focus:border-emerald-400 text-xs font-semibold text-black dark:text-white placeholder-neutral-400 focus:outline-none transition"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-bold text-neutral-700">Description</label>
+                <label className="text-xs font-bold text-neutral-700 dark:text-neutral-300">Description</label>
                 <textarea
                   rows={4}
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Please describe what happened in detail..."
                   required
-                  className="w-full mt-1.5 px-3.5 py-3 rounded-xl bg-neutral-100 hover:bg-neutral-150 border border-transparent focus:border-black text-xs font-semibold text-black focus:outline-none transition resize-none"
+                  className="w-full mt-1.5 px-3.5 py-3 rounded-xl bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-150 border border-transparent dark:border-neutral-700 focus:border-black dark:focus:border-emerald-400 text-xs font-semibold text-black dark:text-white placeholder-neutral-400 focus:outline-none transition resize-none"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-3.5 rounded-xl bg-black hover:bg-neutral-800 text-white font-bold text-xs flex items-center justify-center gap-2 transition shadow-sm disabled:opacity-50"
+                className="w-full py-3.5 rounded-xl bg-black dark:bg-emerald-500 hover:bg-neutral-800 dark:hover:bg-emerald-600 text-white dark:text-black font-bold text-xs flex items-center justify-center gap-2 transition shadow-sm disabled:opacity-50"
               >
                 <Send className="h-4 w-4" />
                 <span>{isSubmitting ? "Submitting Ticket..." : "Submit Support Request"}</span>
@@ -265,8 +265,8 @@ export function SupportSection() {
         {/* Right: FAQ Accordion */}
         <div className="lg:col-span-6 space-y-4">
           <div className="space-y-1 mb-2">
-            <h2 className="text-2xl font-black text-black">Frequently Asked Questions</h2>
-            <p className="text-xs text-neutral-500">Quick answers to common questions</p>
+            <h2 className="text-2xl font-black text-black dark:text-white">Frequently Asked Questions</h2>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400">Quick answers to common questions</p>
           </div>
 
           <div className="space-y-3">
@@ -275,11 +275,11 @@ export function SupportSection() {
               return (
                 <div
                   key={idx}
-                  className="border border-neutral-200 rounded-2xl overflow-hidden bg-neutral-50/50 transition"
+                  className="border border-neutral-200 dark:border-neutral-800 rounded-2xl overflow-hidden bg-neutral-50/50 dark:bg-neutral-900 transition"
                 >
                   <button
                     onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                    className="w-full px-5 py-4 text-left flex items-center justify-between text-xs font-bold text-black hover:bg-neutral-100/50 transition"
+                    className="w-full px-5 py-4 text-left flex items-center justify-between text-xs font-bold text-black dark:text-white hover:bg-neutral-100/50 dark:hover:bg-neutral-800 transition"
                   >
                     <span>{faq.q}</span>
                     {isOpen ? (
@@ -290,7 +290,7 @@ export function SupportSection() {
                   </button>
 
                   {isOpen && (
-                    <div className="px-5 pb-4 text-xs text-neutral-600 leading-relaxed border-t border-neutral-200/60 pt-3 bg-white">
+                    <div className="px-5 pb-4 text-xs text-neutral-600 dark:text-neutral-300 leading-relaxed border-t border-neutral-200/60 dark:border-neutral-800 pt-3 bg-white dark:bg-neutral-900">
                       {faq.a}
                     </div>
                   )}
@@ -299,7 +299,7 @@ export function SupportSection() {
             })}
 
             {filteredFaqs.length === 0 && (
-              <div className="p-8 text-center text-xs text-neutral-500 bg-neutral-50 rounded-2xl">
+              <div className="p-8 text-center text-xs text-neutral-500 dark:text-neutral-400 bg-neutral-50 dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800">
                 No matching help articles found for "{searchQuery}". Please submit a ticket above.
               </div>
             )}

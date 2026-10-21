@@ -131,12 +131,12 @@ export function DriveSection({ onOpenAuth }: DriveSectionProps) {
   };
 
   return (
-    <div className="w-full h-[calc(100vh-64px)] flex flex-col lg:flex-row overflow-hidden bg-white text-black">
+    <div className="w-full h-[calc(100vh-64px)] flex flex-col lg:flex-row overflow-hidden bg-white dark:bg-[#070709] text-black dark:text-white transition-colors duration-200">
       {/* LEFT PANEL: Driver Console Sidebar */}
-      <div className="w-full lg:w-[480px] xl:w-[500px] h-full flex flex-col bg-white border-r border-neutral-200 shadow-2xl z-20 shrink-0">
+      <div className="w-full lg:w-[480px] xl:w-[500px] h-full flex flex-col bg-white dark:bg-[#070709] border-r border-neutral-200 dark:border-neutral-800 shadow-2xl z-20 shrink-0">
         <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-5">
           {/* Top Status & Online Switcher */}
-          <div className="p-4 rounded-3xl bg-black text-white flex items-center justify-between shadow-xl">
+          <div className="p-4 rounded-3xl bg-black dark:bg-[#0f0f13] text-white flex items-center justify-between shadow-xl border border-transparent dark:border-neutral-800">
             <div className="space-y-0.5">
               <div className="flex items-center gap-2">
                 <span
@@ -171,20 +171,20 @@ export function DriveSection({ onOpenAuth }: DriveSectionProps) {
 
           {/* Earnings & Trips Metrics Bar */}
           <div className="grid grid-cols-3 gap-2.5">
-            <div className="p-3.5 rounded-2xl bg-neutral-100 border border-neutral-200 text-center">
+            <div className="p-3.5 rounded-2xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-center">
               <span className="text-[10px] text-neutral-500 uppercase font-bold block mb-0.5">Today's Earnings</span>
-              <span className="text-lg font-black text-black">₹{todayEarnings}</span>
+              <span className="text-lg font-black text-black dark:text-white">₹{todayEarnings}</span>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-neutral-100 border border-neutral-200 text-center">
+            <div className="p-3.5 rounded-2xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-center">
               <span className="text-[10px] text-neutral-500 uppercase font-bold block mb-0.5">Completed</span>
-              <span className="text-lg font-black text-black">{completedTrips} trips</span>
+              <span className="text-lg font-black text-black dark:text-white">{completedTrips} trips</span>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-neutral-100 border border-neutral-200 text-center">
+            <div className="p-3.5 rounded-2xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-center">
               <span className="text-[10px] text-neutral-500 uppercase font-bold block mb-0.5">Rating</span>
-              <span className="text-lg font-black text-black flex items-center justify-center gap-1">
-                <Star className="h-4 w-4 fill-black text-black" /> 4.96
+              <span className="text-lg font-black text-black dark:text-white flex items-center justify-center gap-1">
+                <Star className="h-4 w-4 fill-black text-black dark:fill-emerald-400 dark:text-emerald-400" /> 4.96
               </span>
             </div>
           </div>
@@ -212,7 +212,7 @@ export function DriveSection({ onOpenAuth }: DriveSectionProps) {
                   <div>
                     <h3 className="text-base font-bold text-white">Alex Morgan</h3>
                     <p className="text-[11px] text-neutral-400 flex items-center gap-1">
-                      ★ 4.95 Rider Rating · UberX
+                      ★ 4.95 Rider Rating · CabGo Standard
                     </p>
                   </div>
                 </div>
@@ -362,12 +362,12 @@ export function DriveSection({ onOpenAuth }: DriveSectionProps) {
 
           {/* IDLE / WAITING RADAR */}
           {tripStage === "IDLE" && (
-            <div className="p-8 text-center rounded-3xl bg-neutral-50 border border-neutral-200 space-y-3">
-              <div className="h-12 w-12 rounded-full bg-neutral-200 flex items-center justify-center mx-auto text-black">
-                <Navigation className="h-6 w-6 text-black animate-spin" />
+            <div className="p-8 text-center rounded-3xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 space-y-3">
+              <div className="h-12 w-12 rounded-full bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center mx-auto text-black dark:text-white">
+                <Navigation className="h-6 w-6 text-black dark:text-emerald-400 animate-spin" />
               </div>
-              <h3 className="text-sm font-bold text-black">Searching for trips in Central Delhi...</h3>
-              <p className="text-xs text-neutral-500 max-w-xs mx-auto">
+              <h3 className="text-sm font-bold text-black dark:text-white">Searching for trips in Central Delhi...</h3>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 max-w-xs mx-auto">
                 High demand near Connaught Place & Aerocity. You will receive an offer automatically when a rider requests.
               </p>
               <button
@@ -376,7 +376,7 @@ export function DriveSection({ onOpenAuth }: DriveSectionProps) {
                   setTripStage("OFFER_INCOMING");
                   setCountdown(15);
                 }}
-                className="mt-2 px-4 py-2.5 rounded-xl bg-black hover:bg-neutral-800 text-white text-xs font-bold transition shadow-sm"
+                className="mt-2 px-5 py-2.5 rounded-xl bg-black dark:bg-emerald-500 hover:bg-neutral-800 dark:hover:bg-emerald-400 text-white dark:text-black text-xs font-black transition shadow-sm"
               >
                 Simulate Incoming Ride Request
               </button>
@@ -384,41 +384,41 @@ export function DriveSection({ onOpenAuth }: DriveSectionProps) {
           )}
 
           {/* Registered Vehicle Details Card */}
-          <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-200 flex items-center justify-between">
+          <div className="p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-black text-white flex items-center justify-center">
-                <Car className="h-5 w-5" />
+              <div className="h-10 w-10 rounded-xl bg-black dark:bg-neutral-800 text-white flex items-center justify-center">
+                <Car className="h-5 w-5 text-emerald-400" />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-black">Toyota Camry Hybrid 2024</h4>
-                <p className="text-[11px] text-neutral-500">Commercial Taxi Permit · Verified</p>
+                <h4 className="text-xs font-bold text-black dark:text-white">Toyota Camry Hybrid 2024</h4>
+                <p className="text-[11px] text-neutral-500 dark:text-neutral-400">Commercial Taxi Permit · Verified</p>
               </div>
             </div>
-            <span className="px-2.5 py-1 rounded-lg bg-neutral-200 font-mono font-bold text-xs text-black">
+            <span className="px-2.5 py-1 rounded-lg bg-neutral-200 dark:bg-neutral-800 font-mono font-bold text-xs text-black dark:text-white">
               DL 01 AB 1234
             </span>
           </div>
         </div>
 
         {/* BOTTOM FIXED STATUS BAR */}
-        <div className="p-4 border-t border-neutral-200 bg-white flex items-center justify-between text-xs text-neutral-500">
-          <div className="flex items-center gap-1.5 font-bold text-neutral-700">
-            <ShieldCheck className="h-4 w-4 text-emerald-600" />
-            <span>Driver Protection Active</span>
+        <div className="p-4 border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#070709] flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-400">
+          <div className="flex items-center gap-1.5 font-bold text-neutral-700 dark:text-neutral-300">
+            <ShieldCheck className="h-4 w-4 text-emerald-500" />
+            <span>CabGo Driver Protection Active</span>
           </div>
-          <span className="font-semibold text-neutral-600">Razorpay Direct Payouts</span>
+          <span className="font-semibold text-neutral-500 dark:text-neutral-400">Razorpay Direct Payouts</span>
         </div>
       </div>
 
       {/* RIGHT PANEL: Live Interactive Leaflet Map */}
-      <div className="flex-1 h-full relative overflow-hidden bg-neutral-100">
+      <div className="flex-1 h-full relative overflow-hidden bg-neutral-100 dark:bg-neutral-950">
         <Map
           className="w-full h-full min-h-[350px]"
           pickupCoords={pickupCoords}
           dropoffCoords={dropoffCoords}
           routeCoordinates={routeCoordinates}
           activeDriverCoords={activeCarCoords}
-          driverName="You (Chirag)"
+          driverName="You (CabGo Partner)"
         />
       </div>
     </div>

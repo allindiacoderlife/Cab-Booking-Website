@@ -82,12 +82,13 @@ export function Map({
 
     layers.clearLayers();
 
-    // 1. Pickup Marker (Black Circle Pin)
+    // 1. Pickup Marker (Green/Black Circle Pin)
+    const isDark = document.documentElement.classList.contains("dark");
     const pickupIcon = L.divIcon({
-      className: "uber-pickup-marker",
+      className: "cabgo-pickup-marker",
       html: `
         <div class="relative flex items-center justify-center">
-          <div class="h-6 w-6 rounded-full bg-black border-2 border-white shadow-xl flex items-center justify-center">
+          <div class="h-6 w-6 rounded-full bg-emerald-500 border-2 border-white shadow-xl flex items-center justify-center">
             <div class="h-2 w-2 rounded-full bg-white"></div>
           </div>
         </div>
@@ -100,7 +101,7 @@ export function Map({
     // 2. Intermediate Stops
     stops.forEach((stop, index) => {
       const stopIcon = L.divIcon({
-        className: "uber-stop-marker",
+        className: "cabgo-stop-marker",
         html: `
           <div class="relative flex items-center justify-center">
             <div class="h-5 w-5 rounded-full bg-neutral-800 border-2 border-white shadow-lg flex items-center justify-center text-[10px] font-black text-white">
@@ -114,12 +115,12 @@ export function Map({
       L.marker([stop.lat, stop.lng], { icon: stopIcon }).addTo(layers);
     });
 
-    // 3. Dropoff Marker (Black Square Pin)
+    // 3. Dropoff Marker (Rose/Black Square Pin)
     const dropoffIcon = L.divIcon({
-      className: "uber-dropoff-marker",
+      className: "cabgo-dropoff-marker",
       html: `
         <div class="relative flex items-center justify-center">
-          <div class="h-6 w-6 rounded-none bg-black border-2 border-white shadow-xl flex items-center justify-center text-white text-[11px] font-black">
+          <div class="h-6 w-6 rounded-none bg-rose-600 border-2 border-white shadow-xl flex items-center justify-center text-white text-[11px] font-black">
             ■
           </div>
         </div>
@@ -129,13 +130,13 @@ export function Map({
     });
     L.marker(dropoffCoords, { icon: dropoffIcon }).addTo(layers);
 
-    // 4. Nearby Drivers (Black Car SVG icons)
+    // 4. Nearby Drivers (Car SVG icons)
     nearbyDrivers.forEach((driver) => {
       const driverIcon = L.divIcon({
-        className: "uber-driver-marker",
+        className: "cabgo-driver-marker",
         html: `
           <div style="transform: rotate(${driver.angle}deg);" class="transition-transform duration-700 ease-out">
-            <div class="h-8 w-8 rounded-full bg-white border border-neutral-300 shadow-md flex items-center justify-center text-black">
+            <div class="h-8 w-8 rounded-full bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 shadow-md flex items-center justify-center text-black dark:text-emerald-400">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.85 7h10.29l1.04 3H5.81l1.04-3zM19 17H5v-4.66l.12-.34h13.77l.11.34V17z"/>
                 <circle cx="7.5" cy="14.5" r="1.5"/>
@@ -153,7 +154,7 @@ export function Map({
     // 5. Active Dispatched Driver (when ride is in progress)
     if (activeDriverCoords) {
       const activeCarIcon = L.divIcon({
-        className: "uber-active-driver-marker",
+        className: "cabgo-active-driver-marker",
         html: `
           <div class="relative flex flex-col items-center justify-center animate-bounce-short">
             <div class="absolute -top-6 whitespace-nowrap bg-black text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-lg border border-neutral-700">
@@ -182,9 +183,9 @@ export function Map({
 
     if (routeCoordinates && routeCoordinates.length > 1) {
       const poly = L.polyline(routeCoordinates, {
-        color: "#000000",
+        color: isDark ? "#10b981" : "#111827",
         weight: 5,
-        opacity: 0.85,
+        opacity: 0.9,
         lineCap: "round",
         lineJoin: "round",
       }).addTo(map);

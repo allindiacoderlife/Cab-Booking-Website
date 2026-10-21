@@ -54,7 +54,7 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: user?.email || "user@uber.com",
+          email: user?.email || "user@cabgo.com",
           fullName,
           phone,
           avatarUrl,
@@ -78,34 +78,34 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in">
-      <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-neutral-200 text-black flex flex-col max-h-[90vh]">
+      <div className="relative w-full max-w-2xl bg-white dark:bg-neutral-900 rounded-3xl shadow-2xl overflow-hidden border border-neutral-200 dark:border-neutral-800 text-black dark:text-white flex flex-col max-h-[90vh] transition-colors">
         {/* Header */}
-        <div className="px-6 py-5 border-b border-neutral-200 flex items-center justify-between bg-neutral-50/50">
+        <div className="px-6 py-5 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between bg-neutral-50/50 dark:bg-neutral-800/40">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-black text-white flex items-center justify-center font-black">
+            <div className="h-10 w-10 rounded-full bg-emerald-500 text-black flex items-center justify-center font-black">
               {fullName.charAt(0).toUpperCase()}
             </div>
             <div>
-              <h2 className="text-xl font-black text-black">Account Settings</h2>
-              <p className="text-xs text-neutral-500">{user?.email || "rider@uber.com"}</p>
+              <h2 className="text-xl font-black text-black dark:text-white">Account Settings</h2>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">{user?.email || "rider@cabgo.com"}</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-full hover:bg-neutral-200 text-neutral-500 hover:text-black transition"
+            className="p-2 rounded-full hover:bg-neutral-200 dark:hover:bg-neutral-800 text-neutral-500 hover:text-black dark:hover:text-white transition"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Sub-tabs */}
-        <div className="flex border-b border-neutral-200 px-6 gap-6 text-xs font-bold bg-white">
+        <div className="flex border-b border-neutral-200 dark:border-neutral-800 px-6 gap-6 text-xs font-bold bg-white dark:bg-neutral-900">
           <button
             onClick={() => setActiveSubTab("account")}
             className={`py-3.5 border-b-2 transition ${
               activeSubTab === "account"
-                ? "border-black text-black"
-                : "border-transparent text-neutral-500 hover:text-black"
+                ? "border-black dark:border-emerald-400 text-black dark:text-emerald-400"
+                : "border-transparent text-neutral-500 hover:text-black dark:hover:text-white"
             }`}
           >
             Personal Info
@@ -114,8 +114,8 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
             onClick={() => setActiveSubTab("safety")}
             className={`py-3.5 border-b-2 transition flex items-center gap-1.5 ${
               activeSubTab === "safety"
-                ? "border-black text-black"
-                : "border-transparent text-neutral-500 hover:text-black"
+                ? "border-black dark:border-emerald-400 text-black dark:text-emerald-400"
+                : "border-transparent text-neutral-500 hover:text-black dark:hover:text-white"
             }`}
           >
             <Shield className="h-3.5 w-3.5" />
@@ -125,8 +125,8 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
             onClick={() => setActiveSubTab("payments")}
             className={`py-3.5 border-b-2 transition flex items-center gap-1.5 ${
               activeSubTab === "payments"
-                ? "border-black text-black"
-                : "border-transparent text-neutral-500 hover:text-black"
+                ? "border-black dark:border-emerald-400 text-black dark:text-emerald-400"
+                : "border-transparent text-neutral-500 hover:text-black dark:hover:text-white"
             }`}
           >
             <CreditCard className="h-3.5 w-3.5" />
@@ -145,47 +145,47 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
 
           {activeSubTab === "account" && (
             <form onSubmit={handleSaveProfile} className="space-y-4">
-              <div className="flex items-center gap-4 p-4 rounded-2xl bg-neutral-50 border border-neutral-200">
+              <div className="flex items-center gap-4 p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700">
                 <img
                   src={avatarUrl}
                   alt={fullName}
-                  className="h-16 w-16 rounded-full object-cover ring-2 ring-neutral-300"
+                  className="h-16 w-16 rounded-full object-cover ring-2 ring-emerald-400"
                 />
                 <div className="flex-1 space-y-1">
-                  <label className="text-xs font-bold text-neutral-700">Avatar Image URL</label>
+                  <label className="text-xs font-bold text-neutral-700 dark:text-neutral-300">Avatar Image URL</label>
                   <input
                     type="url"
                     value={avatarUrl}
                     onChange={(e) => setAvatarUrl(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-white border border-neutral-300 text-xs text-black focus:outline-none focus:border-black"
+                    className="w-full px-3 py-2 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-xs text-black dark:text-white focus:outline-none focus:border-black dark:focus:border-emerald-400"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-neutral-700">Full Name</label>
+                  <label className="text-xs font-bold text-neutral-700 dark:text-neutral-300">Full Name</label>
                   <div className="relative">
                     <User className="absolute left-3 top-3 h-4 w-4 text-neutral-400" />
                     <input
                       type="text"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-neutral-300 text-xs font-semibold text-black focus:outline-none focus:border-black"
+                      className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-xs font-semibold text-black dark:text-white focus:outline-none focus:border-black dark:focus:border-emerald-400"
                       required
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-neutral-700">Phone Number</label>
+                  <label className="text-xs font-bold text-neutral-700 dark:text-neutral-300">Phone Number</label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-3 h-4 w-4 text-neutral-400" />
                     <input
                       type="tel"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-neutral-300 text-xs font-semibold text-black focus:outline-none focus:border-black"
+                      className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-xs font-semibold text-black dark:text-white focus:outline-none focus:border-black dark:focus:border-emerald-400"
                       required
                     />
                   </div>
@@ -193,52 +193,52 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-neutral-700">Email Address (Read-only)</label>
+                <label className="text-xs font-bold text-neutral-700 dark:text-neutral-300">Email Address (Read-only)</label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-3 h-4 w-4 text-neutral-400" />
                   <input
                     type="email"
-                    value={user?.email || "rider@uber.com"}
+                    value={user?.email || "rider@cabgo.com"}
                     disabled
-                    className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-neutral-100 border border-neutral-200 text-xs font-semibold text-neutral-500 cursor-not-allowed"
+                    className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-xs font-semibold text-neutral-500 dark:text-neutral-400 cursor-not-allowed"
                   />
                 </div>
               </div>
 
               {/* Role Indicator & Driver Vehicle info */}
-              <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-200 space-y-3">
+              <div className="p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 space-y-3">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="text-xs font-bold text-black uppercase tracking-wider">Account Role</h4>
-                    <p className="text-xs text-neutral-500">Currently active as {role}</p>
+                    <h4 className="text-xs font-bold text-black dark:text-white uppercase tracking-wider">Account Role</h4>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400">Currently active as {role}</p>
                   </div>
                   <button
                     type="button"
                     onClick={() => switchRole(role === "RIDER" ? "DRIVER" : "RIDER")}
-                    className="px-3.5 py-1.5 rounded-xl bg-black text-white text-xs font-bold hover:bg-neutral-800 transition"
+                    className="px-3.5 py-1.5 rounded-xl bg-black dark:bg-emerald-500 text-white dark:text-black text-xs font-bold hover:bg-neutral-800 dark:hover:bg-emerald-600 transition"
                   >
                     Switch to {role === "RIDER" ? "Driver Mode" : "Rider Mode"}
                   </button>
                 </div>
 
                 {role === "DRIVER" && (
-                  <div className="pt-2 border-t border-neutral-200 grid grid-cols-2 gap-3">
+                  <div className="pt-2 border-t border-neutral-200 dark:border-neutral-700 grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-[11px] font-bold text-neutral-600">Vehicle Plate</label>
+                      <label className="text-[11px] font-bold text-neutral-600 dark:text-neutral-400">Vehicle Plate</label>
                       <input
                         type="text"
                         value={vehiclePlate}
                         onChange={(e) => setVehiclePlate(e.target.value)}
-                        className="w-full mt-1 px-3 py-2 rounded-lg bg-white border border-neutral-300 text-xs font-mono font-bold"
+                        className="w-full mt-1 px-3 py-2 rounded-lg bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-xs font-mono font-bold text-black dark:text-white"
                       />
                     </div>
                     <div>
-                      <label className="text-[11px] font-bold text-neutral-600">Car Model</label>
+                      <label className="text-[11px] font-bold text-neutral-600 dark:text-neutral-400">Car Model</label>
                       <input
                         type="text"
                         value={vehicleModel}
                         onChange={(e) => setVehicleModel(e.target.value)}
-                        className="w-full mt-1 px-3 py-2 rounded-lg bg-white border border-neutral-300 text-xs font-bold"
+                        className="w-full mt-1 px-3 py-2 rounded-lg bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-xs font-bold text-black dark:text-white"
                       />
                     </div>
                   </div>
@@ -249,7 +249,7 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="px-6 py-2.5 rounded-xl bg-black hover:bg-neutral-800 text-white font-bold text-xs flex items-center gap-2 transition disabled:opacity-50"
+                  className="px-6 py-2.5 rounded-xl bg-black dark:bg-emerald-500 hover:bg-neutral-800 dark:hover:bg-emerald-600 text-white dark:text-black font-bold text-xs flex items-center gap-2 transition disabled:opacity-50"
                 >
                   <Save className="h-4 w-4" />
                   <span>{isSaving ? "Saving Changes..." : "Save Profile"}</span>
@@ -361,11 +361,11 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                 </span>
               </div>
 
-              <div className="p-4 rounded-2xl border border-dashed border-neutral-300 text-center space-y-2">
+              <div className="p-4 rounded-2xl border border-dashed border-neutral-300 dark:border-neutral-700 text-center space-y-2">
                 <CreditCard className="h-6 w-6 text-neutral-400 mx-auto" />
-                <p className="text-xs font-bold text-neutral-700">Add Corporate Expense Card</p>
-                <p className="text-[11px] text-neutral-500">
-                  Connect company cards via Uber Business integration for automated GST invoices.
+                <p className="text-xs font-bold text-neutral-700 dark:text-neutral-300">Add Corporate Expense Card</p>
+                <p className="text-[11px] text-neutral-500 dark:text-neutral-400">
+                  Connect company cards via CabGo Business integration for automated GST invoices.
                 </p>
               </div>
             </div>

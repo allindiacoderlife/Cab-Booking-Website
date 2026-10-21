@@ -119,7 +119,7 @@ const POPULAR_LOCATIONS: LocationItem[] = [
 ];
 
 interface VehicleTier {
-  id: "UberX" | "Comfort" | "UberXL" | "Premier";
+  id: "CabGoX" | "Comfort" | "CabGoXL" | "Premier";
   name: string;
   desc: string;
   basePrice: number;
@@ -131,8 +131,8 @@ interface VehicleTier {
 
 const VEHICLE_TIERS: VehicleTier[] = [
   {
-    id: "UberX",
-    name: "UberX",
+    id: "CabGoX",
+    name: "CabGo Standard",
     desc: "Affordable everyday reliable rides",
     basePrice: 60,
     perKm: 14,
@@ -142,16 +142,16 @@ const VEHICLE_TIERS: VehicleTier[] = [
   },
   {
     id: "Comfort",
-    name: "Comfort",
-    desc: "Newer cars with top drivers & extra legroom",
+    name: "CabGo Comfort",
+    desc: "Spacious sedans with top drivers & extra legroom",
     basePrice: 90,
     perKm: 18,
     seats: 4,
     eta: "5 mins away",
   },
   {
-    id: "UberXL",
-    name: "UberXL",
+    id: "CabGoXL",
+    name: "CabGo XL",
     desc: "Spacious SUVs for up to 6 & extra luggage",
     basePrice: 130,
     perKm: 25,
@@ -161,8 +161,8 @@ const VEHICLE_TIERS: VehicleTier[] = [
   },
   {
     id: "Premier",
-    name: "Premier",
-    desc: "Premium sedans and chauffeured experience",
+    name: "CabGo Premier",
+    desc: "Executive luxury sedans & chauffeured ride",
     basePrice: 180,
     perKm: 32,
     seats: 4,
@@ -391,7 +391,7 @@ export function RideSection({
   const handleApplyPromo = (e: React.FormEvent) => {
     e.preventDefault();
     const code = promoCode.trim().toUpperCase();
-    if (code === "UBERFIRST" || code === "WELCOME50") {
+    if (code === "CABGOFIRST" || code === "WELCOME50" || code === "UBERFIRST") {
       setDiscountAmount(75);
       setPromoMessage("Coupon applied! ₹75 discount active.");
     } else if (code === "RAZORPAY") {
@@ -399,7 +399,7 @@ export function RideSection({
       setPromoMessage("Razorpay Promo: ₹50 discount applied.");
     } else {
       setDiscountAmount(0);
-      setPromoMessage("Invalid promo code. Try 'UBERFIRST'");
+      setPromoMessage("Invalid promo code. Try 'CABGOFIRST'");
     }
   };
 
@@ -413,7 +413,7 @@ export function RideSection({
     if (paymentMode === "CASH") {
       // Cash Booking
       const rideData = {
-        id: `UBER-${Math.floor(100000 + Math.random() * 900000)}`,
+        id: `CABGO-${Math.floor(100000 + Math.random() * 900000)}`,
         pickupAddress: pickupText,
         dropoffAddress: dropoffText,
         fare: finalFare,
@@ -458,14 +458,14 @@ export function RideSection({
     processRazorpayPayment({
       amount: finalFare,
       currency: "INR",
-      rideId: `UBER-${Math.floor(100000 + Math.random() * 900000)}`,
+      rideId: `CABGO-${Math.floor(100000 + Math.random() * 900000)}`,
       riderName: user.fullName,
       riderEmail: user.email,
       riderPhone: user.phone || "+919876543210",
       onSuccess: async (paymentId) => {
         setIsProcessingPayment(false);
         const rideData = {
-          id: `UBER-${Math.floor(100000 + Math.random() * 900000)}`,
+          id: `CABGO-${Math.floor(100000 + Math.random() * 900000)}`,
           pickupAddress: pickupText,
           dropoffAddress: dropoffText,
           fare: finalFare,
@@ -520,7 +520,7 @@ export function RideSection({
         contactPhone: "112",
         currentLat: pickupCoords[0],
         currentLng: pickupCoords[1],
-        rideId: activeRide?.id || "UBER-SOS-ACTIVE",
+        rideId: activeRide?.id || "CABGO-SOS-ACTIVE",
       }),
     }).catch(console.warn);
 
@@ -535,9 +535,9 @@ export function RideSection({
       : undefined;
 
   return (
-    <div className="w-full h-[calc(100vh-64px)] flex flex-col lg:flex-row overflow-hidden bg-white text-black">
-      {/* LEFT PANEL: Authentic Uber Booking Sidebar */}
-      <div className="w-full lg:w-[480px] xl:w-[500px] h-full flex flex-col bg-white border-r border-neutral-200 shadow-2xl z-20 shrink-0">
+    <div className="w-full h-[calc(100vh-64px)] flex flex-col lg:flex-row overflow-hidden bg-white dark:bg-[#0a0a0c] text-black dark:text-white transition-colors duration-200">
+      {/* LEFT PANEL: Authentic CabGo Booking Sidebar */}
+      <div className="w-full lg:w-[480px] xl:w-[500px] h-full flex flex-col bg-white dark:bg-[#0c0c10] border-r border-neutral-200 dark:border-neutral-800 shadow-2xl z-20 shrink-0 transition-colors duration-200">
         {/* Top Scrollable Container */}
         <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-5">
           {/* ACTIVE RIDE DRAWER (Appears immediately upon booking) */}
@@ -562,7 +562,7 @@ export function RideSection({
                   <span className="text-xs font-mono text-neutral-400">#{activeRide.id}</span>
                 </div>
 
-                {/* Uber Safety PIN Code */}
+                {/* CabGo Safety PIN Code */}
                 <div className="p-3.5 rounded-2xl bg-neutral-900 border border-neutral-800 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <KeyRound className="h-4 w-4 text-emerald-400" />
@@ -640,20 +640,20 @@ export function RideSection({
             <>
               {/* HEADER */}
               <div className="space-y-1">
-                <h1 className="text-2xl sm:text-3xl font-black text-black tracking-tight">Get a ride</h1>
-                <p className="text-xs text-neutral-500">
+                <h1 className="text-2xl sm:text-3xl font-black text-black dark:text-white tracking-tight">Get a ride</h1>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400">
                   Reliable rides across Delhi NCR with live fare estimates.
                 </p>
               </div>
 
-              {/* ROUTE INPUTS CARD (Iconic Uber layout) */}
-              <div className="relative rounded-2xl bg-neutral-100 p-3 space-y-2 border border-neutral-200">
+              {/* ROUTE INPUTS CARD */}
+              <div className="relative rounded-2xl bg-neutral-100 dark:bg-neutral-900 p-3 space-y-2 border border-neutral-200 dark:border-neutral-800">
                 {/* Visual Route Connector Line */}
-                <div className="absolute left-[25px] top-[26px] bottom-[26px] w-[2px] bg-neutral-400 pointer-events-none" />
+                <div className="absolute left-[25px] top-[26px] bottom-[26px] w-[2px] bg-neutral-400 dark:bg-neutral-700 pointer-events-none" />
 
                 {/* 1. Pickup Input */}
                 <div className="relative">
-                  <div className="absolute left-3.5 top-3.5 h-2.5 w-2.5 rounded-full bg-black z-10" />
+                  <div className="absolute left-3.5 top-3.5 h-2.5 w-2.5 rounded-full bg-emerald-500 z-10" />
                   <input
                     type="text"
                     value={pickupText}
@@ -663,12 +663,12 @@ export function RideSection({
                       setActiveDropdown("pickup");
                     }}
                     placeholder="Pickup location"
-                    className="w-full pl-9 pr-8 py-2.5 rounded-xl bg-white text-xs font-semibold text-black placeholder-neutral-400 border border-neutral-200 focus:outline-none focus:border-black shadow-sm"
+                    className="w-full pl-9 pr-8 py-2.5 rounded-xl bg-white dark:bg-neutral-800 text-xs font-semibold text-black dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 border border-neutral-200 dark:border-neutral-700 focus:outline-none focus:border-black dark:focus:border-emerald-400 shadow-sm"
                   />
                   {pickupText && (
                     <button
                       onClick={() => setPickupText("")}
-                      className="absolute right-2.5 top-2.5 text-neutral-400 hover:text-black"
+                      className="absolute right-2.5 top-2.5 text-neutral-400 hover:text-black dark:hover:text-white"
                     >
                       <X className="h-4 w-4" />
                     </button>
@@ -676,7 +676,7 @@ export function RideSection({
 
                   {/* Pickup Autocomplete Dropdown */}
                   {activeDropdown === "pickup" && (
-                    <div className="absolute top-12 left-0 right-0 z-30 bg-white rounded-2xl border border-neutral-300 shadow-2xl p-2 max-h-56 overflow-y-auto space-y-1 animate-in fade-in">
+                    <div className="absolute top-12 left-0 right-0 z-30 bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-300 dark:border-neutral-800 shadow-2xl p-2 max-h-56 overflow-y-auto space-y-1 animate-in fade-in">
                       <div className="text-[10px] font-bold text-neutral-400 uppercase px-3 py-1">
                         Suggested Pickup Locations
                       </div>
@@ -688,14 +688,14 @@ export function RideSection({
                         <div
                           key={loc.id}
                           onClick={() => handleSelectLocation(loc, "pickup")}
-                          className="p-2.5 rounded-xl hover:bg-neutral-100 cursor-pointer flex items-center gap-2.5 transition text-left"
+                          className="p-2.5 rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-800 cursor-pointer flex items-center gap-2.5 transition text-left"
                         >
-                          <div className="h-7 w-7 rounded-full bg-neutral-100 flex items-center justify-center shrink-0">
-                            <MapPin className="h-3.5 w-3.5 text-black" />
+                          <div className="h-7 w-7 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center shrink-0">
+                            <MapPin className="h-3.5 w-3.5 text-black dark:text-emerald-400" />
                           </div>
                           <div className="truncate">
-                            <p className="text-xs font-bold text-black truncate">{loc.title}</p>
-                            <p className="text-[11px] text-neutral-500 truncate">{loc.subtitle}</p>
+                            <p className="text-xs font-bold text-black dark:text-white truncate">{loc.title}</p>
+                            <p className="text-[11px] text-neutral-500 dark:text-neutral-400 truncate">{loc.subtitle}</p>
                           </div>
                         </div>
                       ))}
@@ -713,7 +713,7 @@ export function RideSection({
                       type="text"
                       value={stop.address}
                       disabled
-                      className="w-full pl-9 pr-9 py-2.5 rounded-xl bg-white text-xs font-semibold text-black border border-neutral-200"
+                      className="w-full pl-9 pr-9 py-2.5 rounded-xl bg-white dark:bg-neutral-800 text-xs font-semibold text-black dark:text-white border border-neutral-200 dark:border-neutral-700"
                     />
                     <button
                       onClick={() => handleRemoveStop(stop.id)}
@@ -726,8 +726,8 @@ export function RideSection({
 
                 {/* Add Stop Drawer */}
                 {isAddingStop ? (
-                  <div className="p-3 rounded-xl bg-white border border-neutral-300 space-y-2 relative animate-in fade-in">
-                    <div className="flex items-center justify-between text-xs font-bold text-black">
+                  <div className="p-3 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 space-y-2 relative animate-in fade-in">
+                    <div className="flex items-center justify-between text-xs font-bold text-black dark:text-white">
                       <span>Add intermediate stop</span>
                       <button onClick={() => setIsAddingStop(false)}>
                         <X className="h-4 w-4 text-neutral-400" />
@@ -743,19 +743,19 @@ export function RideSection({
                           setActiveDropdown("stop");
                         }}
                         placeholder="Search stop address (e.g. Noida, Delhi, Cyber City)"
-                        className="w-full px-3 py-2 rounded-lg bg-neutral-100 text-xs text-black focus:outline-none focus:bg-white focus:border focus:border-black"
+                        className="w-full px-3 py-2 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-xs text-black dark:text-white placeholder-neutral-400 focus:outline-none focus:bg-white dark:focus:bg-neutral-800 focus:border focus:border-black dark:focus:border-emerald-400"
                       />
 
                       {/* Dropdown suggestions for stop */}
                       {activeDropdown === "stop" && (
-                        <div className="absolute top-10 left-0 right-0 z-30 bg-white rounded-xl border border-neutral-300 shadow-2xl p-1 max-h-48 overflow-y-auto space-y-1">
+                        <div className="absolute top-10 left-0 right-0 z-30 bg-white dark:bg-neutral-900 rounded-xl border border-neutral-300 dark:border-neutral-700 shadow-2xl p-1 max-h-48 overflow-y-auto space-y-1">
                           {POPULAR_LOCATIONS.filter((l) =>
                             l.title.toLowerCase().includes(newStopText.toLowerCase())
                           ).map((loc) => (
                             <div
                               key={loc.id}
                               onClick={() => handleSelectLocation(loc, "stop")}
-                              className="p-2 rounded-lg hover:bg-neutral-100 cursor-pointer text-left text-xs font-semibold text-black"
+                              className="p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 cursor-pointer text-left text-xs font-semibold text-black dark:text-white"
                             >
                               {loc.title}
                             </div>
@@ -767,7 +767,7 @@ export function RideSection({
                     <button
                       type="button"
                       onClick={handleCustomStopSubmit}
-                      className="w-full py-2 rounded-lg bg-black text-white text-xs font-bold transition"
+                      className="w-full py-2 rounded-lg bg-black dark:bg-emerald-500 hover:bg-neutral-800 dark:hover:bg-emerald-600 text-white dark:text-black text-xs font-bold transition"
                     >
                       Confirm Stop (+₹60)
                     </button>
@@ -778,7 +778,7 @@ export function RideSection({
                       <button
                         type="button"
                         onClick={() => setIsAddingStop(true)}
-                        className="text-xs font-bold text-black hover:opacity-70 flex items-center gap-1 transition"
+                        className="text-xs font-bold text-black dark:text-emerald-400 hover:opacity-70 flex items-center gap-1 transition"
                       >
                         <Plus className="h-3.5 w-3.5" />
                         Add stop
@@ -786,7 +786,7 @@ export function RideSection({
                       <button
                         type="button"
                         onClick={handleSwapLocations}
-                        className="p-1 rounded-full hover:bg-neutral-200 text-neutral-500 hover:text-black transition"
+                        className="p-1 rounded-full hover:bg-neutral-200 dark:hover:bg-neutral-800 text-neutral-500 hover:text-black dark:hover:text-white transition"
                         title="Swap pickup & dropoff"
                       >
                         <ArrowUpDown className="h-3.5 w-3.5" />
@@ -797,7 +797,7 @@ export function RideSection({
 
                 {/* 2. Dropoff Input */}
                 <div className="relative">
-                  <div className="absolute left-3.5 top-3.5 h-2.5 w-2.5 rounded-none bg-black z-10" />
+                  <div className="absolute left-3.5 top-3.5 h-2.5 w-2.5 rounded-none bg-rose-500 z-10" />
                   <input
                     type="text"
                     value={dropoffText}
@@ -807,12 +807,12 @@ export function RideSection({
                       setActiveDropdown("dropoff");
                     }}
                     placeholder="Dropoff destination"
-                    className="w-full pl-9 pr-8 py-2.5 rounded-xl bg-white text-xs font-semibold text-black placeholder-neutral-400 border border-neutral-200 focus:outline-none focus:border-black shadow-sm"
+                    className="w-full pl-9 pr-8 py-2.5 rounded-xl bg-white dark:bg-neutral-800 text-xs font-semibold text-black dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 border border-neutral-200 dark:border-neutral-700 focus:outline-none focus:border-black dark:focus:border-emerald-400 shadow-sm"
                   />
                   {dropoffText && (
                     <button
                       onClick={() => setDropoffText("")}
-                      className="absolute right-2.5 top-2.5 text-neutral-400 hover:text-black"
+                      className="absolute right-2.5 top-2.5 text-neutral-400 hover:text-black dark:hover:text-white"
                     >
                       <X className="h-4 w-4" />
                     </button>
@@ -820,7 +820,7 @@ export function RideSection({
 
                   {/* Dropoff Autocomplete Dropdown */}
                   {activeDropdown === "dropoff" && (
-                    <div className="absolute top-12 left-0 right-0 z-30 bg-white rounded-2xl border border-neutral-300 shadow-2xl p-2 max-h-56 overflow-y-auto space-y-1 animate-in fade-in">
+                    <div className="absolute top-12 left-0 right-0 z-30 bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-300 dark:border-neutral-800 shadow-2xl p-2 max-h-56 overflow-y-auto space-y-1 animate-in fade-in">
                       <div className="text-[10px] font-bold text-neutral-400 uppercase px-3 py-1">
                         Suggested Dropoff Destinations
                       </div>
@@ -832,14 +832,14 @@ export function RideSection({
                         <div
                           key={loc.id}
                           onClick={() => handleSelectLocation(loc, "dropoff")}
-                          className="p-2.5 rounded-xl hover:bg-neutral-100 cursor-pointer flex items-center gap-2.5 transition text-left"
+                          className="p-2.5 rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-800 cursor-pointer flex items-center gap-2.5 transition text-left"
                         >
-                          <div className="h-7 w-7 rounded-full bg-neutral-100 flex items-center justify-center shrink-0">
-                            <MapPin className="h-3.5 w-3.5 text-black" />
+                          <div className="h-7 w-7 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center shrink-0">
+                            <MapPin className="h-3.5 w-3.5 text-black dark:text-rose-400" />
                           </div>
                           <div className="truncate">
-                            <p className="text-xs font-bold text-black truncate">{loc.title}</p>
-                            <p className="text-[11px] text-neutral-500 truncate">{loc.subtitle}</p>
+                            <p className="text-xs font-bold text-black dark:text-white truncate">{loc.title}</p>
+                            <p className="text-[11px] text-neutral-500 dark:text-neutral-400 truncate">{loc.subtitle}</p>
                           </div>
                         </div>
                       ))}
@@ -848,9 +848,9 @@ export function RideSection({
                 </div>
               </div>
 
-              {/* VEHICLE TIERS SELECTION (Authentic Uber vehicle cards) */}
+              {/* VEHICLE TIERS SELECTION */}
               <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs font-bold text-neutral-500 px-1">
+                <div className="flex items-center justify-between text-xs font-bold text-neutral-500 dark:text-neutral-400 px-1">
                   <span>Available rides</span>
                   <span>{distanceKm} km · ~{durationMins} mins</span>
                 </div>
@@ -868,32 +868,32 @@ export function RideSection({
                         onClick={() => setSelectedTier(tier)}
                         className={`p-3 rounded-2xl border transition cursor-pointer flex items-center justify-between ${
                           isSelected
-                            ? "bg-neutral-50 border-black ring-2 ring-black"
-                            : "bg-white border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50/50"
+                            ? "bg-neutral-50 dark:bg-neutral-800/80 border-black dark:border-emerald-400 ring-2 ring-black dark:ring-emerald-400"
+                            : "bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/40"
                         }`}
                       >
                         <div className="flex items-center gap-3">
-                          <div className="h-11 w-11 rounded-xl bg-neutral-100 flex items-center justify-center text-black shrink-0">
+                          <div className="h-11 w-11 rounded-xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-black dark:text-white shrink-0">
                             <Car className="h-5 w-5" />
                           </div>
                           <div>
                             <div className="flex items-center gap-1.5">
-                              <h4 className="text-xs font-black text-black">{tier.name}</h4>
-                              <span className="text-[10px] text-neutral-500 flex items-center gap-0.5 font-bold">
+                              <h4 className="text-xs font-black text-black dark:text-white">{tier.name}</h4>
+                              <span className="text-[10px] text-neutral-500 dark:text-neutral-400 flex items-center gap-0.5 font-bold">
                                 <User className="h-2.5 w-2.5" /> {tier.seats}
                               </span>
                               {tier.badge && (
-                                <span className="px-1.5 py-0.5 rounded bg-neutral-200 text-black text-[9px] font-black uppercase">
+                                <span className="px-1.5 py-0.5 rounded bg-neutral-200 dark:bg-neutral-800 text-black dark:text-emerald-400 text-[9px] font-black uppercase">
                                   {tier.badge}
                                 </span>
                               )}
                             </div>
-                            <p className="text-[11px] text-neutral-500">{tier.eta} · {tier.desc}</p>
+                            <p className="text-[11px] text-neutral-500 dark:text-neutral-400">{tier.eta} · {tier.desc}</p>
                           </div>
                         </div>
 
                         <div className="text-right shrink-0">
-                          <div className="text-sm font-black text-black">₹{tierFare}</div>
+                          <div className="text-sm font-black text-black dark:text-white">₹{tierFare}</div>
                         </div>
                       </div>
                     );
@@ -910,8 +910,8 @@ export function RideSection({
                     onClick={() => setPaymentMode("RAZORPAY")}
                     className={`py-2 px-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition ${
                       paymentMode === "RAZORPAY"
-                        ? "border-black bg-neutral-900 text-white shadow-sm"
-                        : "border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300"
+                        ? "border-black dark:border-emerald-400 bg-neutral-900 dark:bg-neutral-800 text-white shadow-sm"
+                        : "border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:border-neutral-300 dark:hover:border-neutral-700"
                     }`}
                   >
                     <CreditCard className="h-3.5 w-3.5 text-emerald-400" />
@@ -923,8 +923,8 @@ export function RideSection({
                     onClick={() => setPaymentMode("CASH")}
                     className={`py-2 px-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition ${
                       paymentMode === "CASH"
-                        ? "border-black bg-neutral-900 text-white shadow-sm"
-                        : "border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300"
+                        ? "border-black dark:border-emerald-400 bg-neutral-900 dark:bg-neutral-800 text-white shadow-sm"
+                        : "border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:border-neutral-300 dark:hover:border-neutral-700"
                     }`}
                   >
                     <Banknote className="h-3.5 w-3.5 text-amber-400" />
@@ -940,20 +940,20 @@ export function RideSection({
                       type="text"
                       value={promoCode}
                       onChange={(e) => setPromoCode(e.target.value)}
-                      placeholder="Promo code (UBERFIRST)"
-                      className="w-full pl-8 pr-3 py-2 rounded-xl bg-neutral-100 border border-transparent focus:border-black text-xs font-semibold text-black uppercase placeholder-neutral-400 focus:outline-none"
+                      placeholder="Promo code (CABGOFIRST)"
+                      className="w-full pl-8 pr-3 py-2 rounded-xl bg-neutral-100 dark:bg-neutral-800 border border-transparent focus:border-black dark:focus:border-emerald-400 text-xs font-semibold text-black dark:text-white uppercase placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none"
                     />
                   </div>
                   <button
                     type="submit"
-                    className="px-3.5 py-2 rounded-xl bg-neutral-200 hover:bg-neutral-300 text-xs font-bold text-black transition"
+                    className="px-3.5 py-2 rounded-xl bg-neutral-200 dark:bg-neutral-800 hover:bg-neutral-300 dark:hover:bg-neutral-700 text-xs font-bold text-black dark:text-white transition"
                   >
                     Apply
                   </button>
                 </form>
 
                 {promoMessage && (
-                  <p className="text-[11px] text-emerald-600 font-bold px-1">{promoMessage}</p>
+                  <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold px-1">{promoMessage}</p>
                 )}
               </div>
             </>
@@ -961,13 +961,13 @@ export function RideSection({
         </div>
 
         {/* BOTTOM FIXED ACTION BAR */}
-        <div className="p-4 sm:p-5 border-t border-neutral-200 bg-white space-y-2">
+        <div className="p-4 sm:p-5 border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#0c0c10] space-y-2 transition-colors duration-200">
           {!activeRide && (
             <button
               type="button"
               disabled={isProcessingPayment}
               onClick={handleBookRide}
-              className="w-full py-4 rounded-xl bg-black hover:bg-neutral-800 disabled:opacity-50 text-white font-black text-sm shadow-xl flex items-center justify-center gap-2 transition"
+              className="w-full py-4 rounded-xl bg-black dark:bg-emerald-500 hover:bg-neutral-800 dark:hover:bg-emerald-600 disabled:opacity-50 text-white dark:text-black font-black text-sm shadow-xl flex items-center justify-center gap-2 transition"
             >
               <span>
                 {isProcessingPayment
@@ -981,9 +981,9 @@ export function RideSection({
           )}
 
           {/* Door-to-Door Safety & SOS */}
-          <div className="flex items-center justify-between text-xs px-1 text-neutral-500">
-            <div className="flex items-center gap-1.5 font-bold text-neutral-700">
-              <Shield className="h-3.5 w-3.5 text-black" />
+          <div className="flex items-center justify-between text-xs px-1 text-neutral-500 dark:text-neutral-400">
+            <div className="flex items-center gap-1.5 font-bold text-neutral-700 dark:text-neutral-300">
+              <Shield className="h-3.5 w-3.5 text-black dark:text-emerald-400" />
               <span>Safety standard verified</span>
             </div>
 
@@ -1004,7 +1004,7 @@ export function RideSection({
       </div>
 
       {/* RIGHT PANEL: Edge-to-Edge Interactive Live Map */}
-      <div className="flex-1 h-full relative overflow-hidden bg-neutral-100">
+      <div className="flex-1 h-full relative overflow-hidden bg-neutral-100 dark:bg-[#0a0a0c]">
         <Map
           className="w-full h-full min-h-[350px]"
           pickupCoords={pickupCoords}
@@ -1013,7 +1013,7 @@ export function RideSection({
           routeCoordinates={routeCoordinates}
           nearbyDrivers={nearbyDrivers}
           activeDriverCoords={currentDriverCoords}
-          driverName="David Chen (Uber)"
+          driverName="David Chen (CabGo)"
         />
       </div>
 

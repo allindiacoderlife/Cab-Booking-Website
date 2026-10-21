@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 import {
   Globe,
   HelpCircle,
@@ -14,6 +15,9 @@ import {
   History,
   Shield,
   Settings,
+  Sun,
+  Moon,
+  Zap,
 } from "lucide-react";
 
 export type NavTab = "home" | "ride" | "drive" | "activity" | "support" | "about";
@@ -27,48 +31,55 @@ interface NavbarProps {
 
 export function Navbar({ activeTab, setActiveTab, onOpenAuth, onOpenProfile }: NavbarProps) {
   const { user, role, switchRole, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-black text-white border-b border-neutral-800">
+    <header className="sticky top-0 z-50 w-full bg-black/95 dark:bg-[#070709]/95 backdrop-blur-md text-white border-b border-neutral-800 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Left: Brand Logo & Navigation Links */}
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-7">
           <button
             onClick={() => setActiveTab("home")}
-            className="text-2xl font-black tracking-tighter text-white hover:opacity-90 transition"
+            className="flex items-center gap-2 group transition"
           >
-            Uber
+            <div className="h-9 w-9 rounded-xl bg-emerald-500 text-black flex items-center justify-center font-black shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
+              <Car className="h-5 w-5" />
+            </div>
+            <div className="text-2xl font-black tracking-tight text-white flex items-center">
+              <span>Cab</span>
+              <span className="text-emerald-400">Go</span>
+            </div>
           </button>
 
           <nav className="hidden md:flex items-center gap-1">
             <button
               onClick={() => setActiveTab("ride")}
-              className={`px-3.5 py-2 rounded-full text-sm font-semibold transition ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition ${
                 activeTab === "ride"
-                  ? "bg-neutral-800 text-white"
-                  : "text-neutral-300 hover:text-white hover:bg-neutral-900"
+                  ? "bg-white text-black dark:bg-white dark:text-black shadow-sm"
+                  : "text-neutral-300 hover:text-white hover:bg-neutral-850"
               }`}
             >
               Ride
             </button>
             <button
               onClick={() => setActiveTab("drive")}
-              className={`px-3.5 py-2 rounded-full text-sm font-semibold transition ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition ${
                 activeTab === "drive"
-                  ? "bg-neutral-800 text-white"
-                  : "text-neutral-300 hover:text-white hover:bg-neutral-900"
+                  ? "bg-white text-black dark:bg-white dark:text-black shadow-sm"
+                  : "text-neutral-300 hover:text-white hover:bg-neutral-850"
               }`}
             >
               Drive
             </button>
             <button
               onClick={() => setActiveTab("activity")}
-              className={`px-3.5 py-2 rounded-full text-sm font-semibold transition flex items-center gap-1.5 ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5 ${
                 activeTab === "activity"
-                  ? "bg-neutral-800 text-white"
-                  : "text-neutral-300 hover:text-white hover:bg-neutral-900"
+                  ? "bg-white text-black dark:bg-white dark:text-black shadow-sm"
+                  : "text-neutral-300 hover:text-white hover:bg-neutral-850"
               }`}
             >
               <History className="h-3.5 w-3.5" />
@@ -76,10 +87,10 @@ export function Navbar({ activeTab, setActiveTab, onOpenAuth, onOpenProfile }: N
             </button>
             <button
               onClick={() => setActiveTab("support")}
-              className={`px-3.5 py-2 rounded-full text-sm font-semibold transition flex items-center gap-1.5 ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5 ${
                 activeTab === "support"
-                  ? "bg-neutral-800 text-white"
-                  : "text-neutral-300 hover:text-white hover:bg-neutral-900"
+                  ? "bg-white text-black dark:bg-white dark:text-black shadow-sm"
+                  : "text-neutral-300 hover:text-white hover:bg-neutral-850"
               }`}
             >
               <HelpCircle className="h-3.5 w-3.5" />
@@ -87,10 +98,10 @@ export function Navbar({ activeTab, setActiveTab, onOpenAuth, onOpenProfile }: N
             </button>
             <button
               onClick={() => setActiveTab("about")}
-              className={`px-3.5 py-2 rounded-full text-sm font-semibold transition ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition ${
                 activeTab === "about"
-                  ? "bg-neutral-800 text-white"
-                  : "text-neutral-300 hover:text-white hover:bg-neutral-900"
+                  ? "bg-white text-black dark:bg-white dark:text-black shadow-sm"
+                  : "text-neutral-300 hover:text-white hover:bg-neutral-850"
               }`}
             >
               About
@@ -98,21 +109,26 @@ export function Navbar({ activeTab, setActiveTab, onOpenAuth, onOpenProfile }: N
           </nav>
         </div>
 
-        {/* Right Menu & User Account */}
+        {/* Right Menu: Theme Toggle, Role Switcher, & User Account */}
         <div className="flex items-center gap-3">
-          <div className="hidden lg:flex items-center gap-2 text-sm text-neutral-300 mr-2">
-            <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-neutral-900 transition">
-              <Globe className="h-4 w-4" />
-              <span>EN</span>
-            </button>
-            <button
-              onClick={() => setActiveTab("support")}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-neutral-900 transition"
-            >
-              <HelpCircle className="h-4 w-4" />
-              <span>Help</span>
-            </button>
-          </div>
+          {/* THEME SWITCHER TOGGLE (Light Mode vs Midnight Dark Mode) */}
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-xl bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-white hover:border-neutral-700 transition flex items-center gap-1.5 text-xs font-bold"
+            title={`Switch to ${theme === "dark" ? "Light" : "Dark"} Mode`}
+          >
+            {theme === "dark" ? (
+              <>
+                <Sun className="h-4 w-4 text-amber-400" />
+                <span className="hidden sm:inline text-[11px]">Light</span>
+              </>
+            ) : (
+              <>
+                <Moon className="h-4 w-4 text-sky-400" />
+                <span className="hidden sm:inline text-[11px]">Dark</span>
+              </>
+            )}
+          </button>
 
           {/* Quick Role Switcher Pill */}
           <div className="hidden sm:flex items-center p-0.5 rounded-full bg-neutral-900 border border-neutral-800">
@@ -121,7 +137,7 @@ export function Navbar({ activeTab, setActiveTab, onOpenAuth, onOpenProfile }: N
                 switchRole("RIDER");
                 setActiveTab("ride");
               }}
-              className={`px-3 py-1 rounded-full text-xs font-semibold transition ${
+              className={`px-3 py-1 rounded-full text-xs font-bold transition ${
                 role === "RIDER" ? "bg-white text-black" : "text-neutral-400 hover:text-white"
               }`}
             >
@@ -132,7 +148,7 @@ export function Navbar({ activeTab, setActiveTab, onOpenAuth, onOpenProfile }: N
                 switchRole("DRIVER");
                 setActiveTab("drive");
               }}
-              className={`px-3 py-1 rounded-full text-xs font-semibold transition ${
+              className={`px-3 py-1 rounded-full text-xs font-bold transition ${
                 role === "DRIVER" ? "bg-white text-black" : "text-neutral-400 hover:text-white"
               }`}
             >
@@ -153,7 +169,7 @@ export function Navbar({ activeTab, setActiveTab, onOpenAuth, onOpenProfile }: N
                 <img
                   src={user.avatarUrl}
                   alt={user.fullName}
-                  className="h-7 w-7 rounded-full object-cover ring-1 ring-white/20"
+                  className="h-7 w-7 rounded-full object-cover ring-2 ring-emerald-500/40"
                 />
                 <ChevronDown className="h-3.5 w-3.5 text-neutral-400" />
               </button>
@@ -161,11 +177,11 @@ export function Navbar({ activeTab, setActiveTab, onOpenAuth, onOpenProfile }: N
               {dropdownOpen && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)} />
-                  <div className="absolute right-0 mt-2 w-60 rounded-2xl bg-neutral-900 border border-neutral-800 shadow-2xl z-50 p-2 text-xs">
+                  <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-neutral-900 border border-neutral-800 shadow-2xl z-50 p-2 text-xs">
                     <div className="px-3 py-2 border-b border-neutral-800 mb-1">
                       <p className="font-bold text-white">{user.fullName}</p>
                       <p className="text-[11px] text-neutral-400 truncate">{user.email}</p>
-                      <span className="inline-block mt-1 px-2 py-0.5 rounded bg-neutral-800 text-[10px] font-bold text-white uppercase">
+                      <span className="inline-block mt-1 px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase">
                         {role} Account
                       </span>
                     </div>
@@ -189,7 +205,7 @@ export function Navbar({ activeTab, setActiveTab, onOpenAuth, onOpenProfile }: N
                       className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-neutral-200 hover:bg-neutral-800 transition"
                     >
                       <History className="h-4 w-4 text-neutral-400" />
-                      My Trips & Receipts
+                      My Trips & Invoices
                     </button>
 
                     <button
@@ -231,7 +247,7 @@ export function Navbar({ activeTab, setActiveTab, onOpenAuth, onOpenProfile }: N
               </button>
               <button
                 onClick={() => onOpenAuth("signup")}
-                className="px-4 py-1.5 rounded-full text-xs font-bold bg-white text-black hover:bg-neutral-200 transition shadow-sm"
+                className="px-4 py-1.5 rounded-full text-xs font-bold bg-emerald-500 text-black hover:bg-emerald-400 transition shadow-sm"
               >
                 Sign up
               </button>
@@ -276,7 +292,7 @@ export function Navbar({ activeTab, setActiveTab, onOpenAuth, onOpenProfile }: N
             }}
             className="w-full text-left py-2 text-sm font-semibold text-white"
           >
-            Activity & Receipts
+            Activity & Invoices
           </button>
           <button
             onClick={() => {
@@ -289,12 +305,13 @@ export function Navbar({ activeTab, setActiveTab, onOpenAuth, onOpenProfile }: N
           </button>
           <button
             onClick={() => {
-              setActiveTab("home");
+              toggleTheme();
               setMobileMenuOpen(false);
             }}
-            className="w-full text-left py-2 text-sm font-semibold text-white"
+            className="w-full text-left py-2 text-sm font-semibold text-emerald-400 flex items-center gap-2"
           >
-            Business
+            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            Toggle {theme === "dark" ? "Light" : "Dark"} Mode
           </button>
         </div>
       )}
