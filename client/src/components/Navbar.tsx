@@ -59,7 +59,7 @@ export function Navbar({ activeTab, setActiveTab, onOpenAuth, onOpenProfile }: N
               className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition ${
                 activeTab === "ride"
                   ? "bg-white text-black dark:bg-white dark:text-black shadow-sm"
-                  : "text-neutral-300 hover:text-white hover:bg-neutral-850"
+                  : "text-neutral-300 hover:text-white hover:bg-white/10"
               }`}
             >
               Ride
@@ -69,7 +69,7 @@ export function Navbar({ activeTab, setActiveTab, onOpenAuth, onOpenProfile }: N
               className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition ${
                 activeTab === "drive"
                   ? "bg-white text-black dark:bg-white dark:text-black shadow-sm"
-                  : "text-neutral-300 hover:text-white hover:bg-neutral-850"
+                  : "text-neutral-300 hover:text-white hover:bg-white/10"
               }`}
             >
               Drive
@@ -79,7 +79,7 @@ export function Navbar({ activeTab, setActiveTab, onOpenAuth, onOpenProfile }: N
               className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5 ${
                 activeTab === "activity"
                   ? "bg-white text-black dark:bg-white dark:text-black shadow-sm"
-                  : "text-neutral-300 hover:text-white hover:bg-neutral-850"
+                  : "text-neutral-300 hover:text-white hover:bg-white/10"
               }`}
             >
               <History className="h-3.5 w-3.5" />
@@ -90,7 +90,7 @@ export function Navbar({ activeTab, setActiveTab, onOpenAuth, onOpenProfile }: N
               className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5 ${
                 activeTab === "support"
                   ? "bg-white text-black dark:bg-white dark:text-black shadow-sm"
-                  : "text-neutral-300 hover:text-white hover:bg-neutral-850"
+                  : "text-neutral-300 hover:text-white hover:bg-white/10"
               }`}
             >
               <HelpCircle className="h-3.5 w-3.5" />
@@ -101,7 +101,7 @@ export function Navbar({ activeTab, setActiveTab, onOpenAuth, onOpenProfile }: N
               className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition ${
                 activeTab === "about"
                   ? "bg-white text-black dark:bg-white dark:text-black shadow-sm"
-                  : "text-neutral-300 hover:text-white hover:bg-neutral-850"
+                  : "text-neutral-300 hover:text-white hover:bg-white/10"
               }`}
             >
               About

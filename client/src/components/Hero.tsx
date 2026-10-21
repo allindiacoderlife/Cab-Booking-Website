@@ -28,7 +28,7 @@ export function Hero({ onStartRide, onGoToDrive }: HeroProps) {
   };
 
   return (
-    <section className="relative bg-white dark:bg-[#0a0a0c] text-black dark:text-white pt-8 pb-16 lg:pt-14 lg:pb-24 border-b border-neutral-200 dark:border-neutral-850 transition-colors">
+    <section className="relative bg-white dark:bg-[#0a0a0c] text-black dark:text-white pt-8 pb-16 lg:pt-14 lg:pb-24 border-b border-neutral-200 dark:border-neutral-800 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Left Column: Tabbed Card */}
@@ -97,7 +97,7 @@ export function Hero({ onStartRide, onGoToDrive }: HeroProps) {
                         value={pickup}
                         onChange={(e) => setPickup(e.target.value)}
                         placeholder="Pickup location"
-                        className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-neutral-100 dark:bg-neutral-900 focus:bg-white dark:focus:bg-neutral-850 border border-transparent focus:border-black dark:focus:border-emerald-500 text-sm font-semibold text-black dark:text-white placeholder-neutral-500 focus:outline-none transition shadow-sm"
+                        className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-neutral-100 dark:bg-neutral-900 focus:bg-white dark:focus:bg-neutral-800 border border-transparent focus:border-black dark:focus:border-emerald-500 text-sm font-semibold text-black dark:text-white placeholder-neutral-500 focus:outline-none transition shadow-sm"
                         required
                       />
                     </div>
@@ -110,7 +110,7 @@ export function Hero({ onStartRide, onGoToDrive }: HeroProps) {
                         value={dropoff}
                         onChange={(e) => setDropoff(e.target.value)}
                         placeholder="Dropoff location"
-                        className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-neutral-100 dark:bg-neutral-900 focus:bg-white dark:focus:bg-neutral-850 border border-transparent focus:border-black dark:focus:border-emerald-500 text-sm font-semibold text-black dark:text-white placeholder-neutral-500 focus:outline-none transition shadow-sm"
+                        className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-neutral-100 dark:bg-neutral-900 focus:bg-white dark:focus:bg-neutral-800 border border-transparent focus:border-black dark:focus:border-emerald-500 text-sm font-semibold text-black dark:text-white placeholder-neutral-500 focus:outline-none transition shadow-sm"
                         required
                       />
                     </div>
@@ -195,7 +195,7 @@ export function Hero({ onStartRide, onGoToDrive }: HeroProps) {
 
           {/* Right Column: High-Impact Visual Graphic */}
           <div className="lg:col-span-6">
-            <div className="relative rounded-3xl overflow-hidden bg-neutral-950 text-white p-8 lg:p-12 shadow-2xl min-h-[460px] flex flex-col justify-between border border-neutral-850">
+            <div className="relative rounded-3xl overflow-hidden bg-neutral-950 text-white p-8 lg:p-12 shadow-2xl min-h-[460px] flex flex-col justify-between border border-neutral-800">
               <div className="absolute inset-0 bg-gradient-to-tr from-black via-neutral-950 to-neutral-900 z-0" />
               
               <div className="relative z-10 space-y-4">
@@ -241,7 +241,7 @@ export function Hero({ onStartRide, onGoToDrive }: HeroProps) {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div
               onClick={() => onStartRide(pickup, dropoff)}
-              className="p-5 rounded-2xl bg-neutral-100 dark:bg-neutral-900 hover:bg-neutral-200/80 dark:hover:bg-neutral-850 transition cursor-pointer flex flex-col justify-between h-40 group border border-transparent dark:border-neutral-800"
+              className="p-5 rounded-2xl bg-neutral-100 dark:bg-neutral-900 hover:bg-neutral-200/80 dark:hover:bg-neutral-800 transition cursor-pointer flex flex-col justify-between h-40 group border border-transparent dark:border-neutral-800"
             >
               <div>
                 <h4 className="font-bold text-base text-black dark:text-white group-hover:text-emerald-500 transition">Ride</h4>
@@ -254,7 +254,7 @@ export function Hero({ onStartRide, onGoToDrive }: HeroProps) {
 
             <div
               onClick={() => onStartRide(pickup, "Airport Terminal")}
-              className="p-5 rounded-2xl bg-neutral-100 dark:bg-neutral-900 hover:bg-neutral-200/80 dark:hover:bg-neutral-850 transition cursor-pointer flex flex-col justify-between h-40 group border border-transparent dark:border-neutral-800"
+              className="p-5 rounded-2xl bg-neutral-100 dark:bg-neutral-900 hover:bg-neutral-200/80 dark:hover:bg-neutral-800 transition cursor-pointer flex flex-col justify-between h-40 group border border-transparent dark:border-neutral-800"
             >
               <div>
                 <h4 className="font-bold text-base text-black dark:text-white group-hover:text-emerald-500 transition">Reserve</h4>
@@ -267,7 +267,7 @@ export function Hero({ onStartRide, onGoToDrive }: HeroProps) {
 
             <div
               onClick={onGoToDrive}
-              className="p-5 rounded-2xl bg-neutral-100 dark:bg-neutral-900 hover:bg-neutral-200/80 dark:hover:bg-neutral-850 transition cursor-pointer flex flex-col justify-between h-40 group border border-transparent dark:border-neutral-800"
+              className="p-5 rounded-2xl bg-neutral-100 dark:bg-neutral-900 hover:bg-neutral-200/80 dark:hover:bg-neutral-800 transition cursor-pointer flex flex-col justify-between h-40 group border border-transparent dark:border-neutral-800"
             >
               <div>
                 <h4 className="font-bold text-base text-black dark:text-white group-hover:text-emerald-500 transition">Drive & Earn</h4>
@@ -280,7 +280,7 @@ export function Hero({ onStartRide, onGoToDrive }: HeroProps) {
 
             <div
               onClick={() => onStartRide(pickup, "Corporate Park")}
-              className="p-5 rounded-2xl bg-neutral-100 dark:bg-neutral-900 hover:bg-neutral-200/80 dark:hover:bg-neutral-850 transition cursor-pointer flex flex-col justify-between h-40 group border border-transparent dark:border-neutral-800"
+              className="p-5 rounded-2xl bg-neutral-100 dark:bg-neutral-900 hover:bg-neutral-200/80 dark:hover:bg-neutral-800 transition cursor-pointer flex flex-col justify-between h-40 group border border-transparent dark:border-neutral-800"
             >
               <div>
                 <h4 className="font-bold text-base text-black dark:text-white group-hover:text-emerald-500 transition">Hourly</h4>

@@ -103,7 +103,7 @@ function MainContent() {
                     </div>
                   </div>
 
-                  <div className="p-8 rounded-3xl bg-neutral-900 dark:bg-neutral-850 text-white space-y-4 shadow-2xl border border-neutral-800">
+                  <div className="p-8 rounded-3xl bg-neutral-900 dark:bg-neutral-900 text-white space-y-4 shadow-2xl border border-neutral-800">
                     <div className="h-10 w-10 rounded-xl bg-neutral-800 flex items-center justify-center text-white">
                       <Briefcase className="h-5 w-5 text-emerald-400" />
                     </div>
@@ -152,7 +152,7 @@ function MainContent() {
                       </button>
                       <button
                         onClick={() => handleOpenAuth("login")}
-                        className="px-6 py-3.5 rounded-2xl bg-neutral-100 dark:bg-neutral-850 hover:bg-neutral-200 dark:hover:bg-neutral-800 text-black dark:text-white font-bold text-xs transition"
+                        className="px-6 py-3.5 rounded-2xl bg-neutral-100 dark:bg-neutral-900 hover:bg-neutral-200 dark:hover:bg-neutral-800 text-black dark:text-white font-bold text-xs transition"
                       >
                         Already have an account?
                       </button>

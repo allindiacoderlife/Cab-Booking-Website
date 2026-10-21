@@ -69,7 +69,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in">
-      <div className="relative w-full max-w-md bg-white dark:bg-[#0f0f13] rounded-3xl shadow-2xl overflow-hidden p-6 sm:p-8 text-black dark:text-white border border-neutral-200 dark:border-neutral-800 transition-colors">
+      <div className="relative w-full max-w-md bg-white dark:bg-[#121217] rounded-3xl shadow-2xl overflow-hidden p-6 sm:p-8 text-black dark:text-white border border-neutral-200 dark:border-neutral-800 transition-colors">
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -80,7 +80,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
 
         {/* CabGo Wordmark */}
         <div className="flex items-center gap-2 mb-4">
-          <div className="h-7 w-7 rounded-lg bg-emerald-500 text-black flex items-center justify-center font-black text-xs">
+          <div className="h-8 w-8 rounded-xl bg-emerald-500 text-black flex items-center justify-center font-black text-sm shadow-md">
             <Car className="h-4 w-4" />
           </div>
           <div className="text-2xl font-black tracking-tight text-black dark:text-white">
@@ -88,46 +88,46 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
           </div>
         </div>
 
-        <h2 className="text-2xl font-black text-black dark:text-white tracking-tight mb-2">
+        <h2 className="text-2xl font-black text-black dark:text-white tracking-tight mb-1.5">
           {mode === "login" ? "Sign in to your account" : "Create your CabGo account"}
         </h2>
-        <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-6">
+        <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-5">
           Access your rides, earnings, and trip receipts with Supabase authentication.
         </p>
 
         {/* Error Alert */}
         {errorMessage && (
-          <div className="mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-400 text-xs flex items-center gap-2">
+          <div className="mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-400 text-xs flex items-center gap-2">
             <AlertCircle className="h-4 w-4 shrink-0" />
             <span>{errorMessage}</span>
           </div>
         )}
 
         {/* Role Selector: Rider vs Driver */}
-        <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-neutral-100 dark:bg-neutral-850 mb-5 border border-transparent dark:border-neutral-800">
+        <div className="grid grid-cols-2 gap-1.5 p-1.5 rounded-2xl bg-neutral-100 dark:bg-neutral-900/90 mb-5 border border-neutral-200 dark:border-neutral-800">
           <button
             type="button"
             onClick={() => setRole("RIDER")}
-            className={`py-2 text-xs font-bold rounded-lg transition flex items-center justify-center gap-1.5 ${
+            className={`py-2.5 text-xs font-bold rounded-xl transition flex items-center justify-center gap-2 ${
               role === "RIDER"
-                ? "bg-white dark:bg-neutral-750 text-black dark:text-white shadow-sm"
-                : "text-neutral-500 hover:text-black dark:hover:text-white"
+                ? "bg-white dark:bg-neutral-800 text-black dark:text-emerald-400 shadow-sm border border-neutral-200/80 dark:border-neutral-700"
+                : "text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white"
             }`}
           >
-            <User className="h-3.5 w-3.5" />
-            Rider
+            <User className="h-4 w-4" />
+            <span>Rider</span>
           </button>
           <button
             type="button"
             onClick={() => setRole("DRIVER")}
-            className={`py-2 text-xs font-bold rounded-lg transition flex items-center justify-center gap-1.5 ${
+            className={`py-2.5 text-xs font-bold rounded-xl transition flex items-center justify-center gap-2 ${
               role === "DRIVER"
-                ? "bg-white dark:bg-neutral-750 text-black dark:text-white shadow-sm"
-                : "text-neutral-500 hover:text-black dark:hover:text-white"
+                ? "bg-white dark:bg-neutral-800 text-black dark:text-emerald-400 shadow-sm border border-neutral-200/80 dark:border-neutral-700"
+                : "text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white"
             }`}
           >
-            <Car className="h-3.5 w-3.5" />
-            Driver Partner
+            <Car className="h-4 w-4" />
+            <span>Driver Partner</span>
           </button>
         </div>
 
@@ -136,9 +136,9 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
           type="button"
           disabled={loading}
           onClick={handleGoogleAuth}
-          className="w-full py-3.5 px-4 rounded-xl border border-neutral-300 dark:border-neutral-700 hover:border-black dark:hover:border-emerald-500 bg-white dark:bg-neutral-850 font-bold text-xs flex items-center justify-center gap-3 transition shadow-sm mb-4 disabled:opacity-50 text-black dark:text-white"
+          className="w-full py-3.5 px-4 rounded-2xl border border-neutral-200 dark:border-neutral-800 hover:border-black dark:hover:border-emerald-500/80 bg-white dark:bg-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800/60 font-bold text-xs flex items-center justify-center gap-3 transition shadow-sm mb-4 disabled:opacity-50 text-neutral-900 dark:text-white"
         >
-          <svg className="h-4 w-4" viewBox="0 0 24 24">
+          <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24">
             <path
               fill="#4285F4"
               d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -156,7 +156,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
               d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
             />
           </svg>
-          <span>Continue with Google</span>
+          <span className="text-black dark:text-white font-bold">Continue with Google</span>
         </button>
 
         {/* Divider */}
@@ -164,7 +164,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-neutral-200 dark:border-neutral-800" />
           </div>
-          <span className="relative bg-white dark:bg-[#0f0f13] px-3 text-[11px] uppercase tracking-wider text-neutral-400 font-bold">
+          <span className="relative bg-white dark:bg-[#121217] px-3 text-[11px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500 font-bold">
             or with email
           </span>
         </div>
@@ -179,7 +179,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Full name"
-                  className="w-full px-4 py-3 rounded-xl bg-neutral-100 dark:bg-neutral-850 border border-transparent focus:border-black dark:focus:border-emerald-500 text-xs font-semibold text-black dark:text-white placeholder-neutral-500 focus:outline-none"
+                  className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 focus:bg-white dark:focus:bg-neutral-900 focus:border-black dark:focus:border-emerald-500 text-xs font-semibold text-black dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none transition"
                   required
                 />
               </div>
@@ -189,7 +189,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="Phone number (+91 98765 43210)"
-                  className="w-full px-4 py-3 rounded-xl bg-neutral-100 dark:bg-neutral-850 border border-transparent focus:border-black dark:focus:border-emerald-500 text-xs font-semibold text-black dark:text-white placeholder-neutral-500 focus:outline-none"
+                  className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 focus:bg-white dark:focus:bg-neutral-900 focus:border-black dark:focus:border-emerald-500 text-xs font-semibold text-black dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none transition"
                   required
                 />
               </div>
@@ -202,7 +202,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="name@example.com"
-              className="w-full px-4 py-3 rounded-xl bg-neutral-100 dark:bg-neutral-850 border border-transparent focus:border-black dark:focus:border-emerald-500 text-xs font-semibold text-black dark:text-white placeholder-neutral-500 focus:outline-none"
+              className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 focus:bg-white dark:focus:bg-neutral-900 focus:border-black dark:focus:border-emerald-500 text-xs font-semibold text-black dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none transition"
               required
             />
           </div>
@@ -213,7 +213,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
-              className="w-full px-4 py-3 rounded-xl bg-neutral-100 dark:bg-neutral-850 border border-transparent focus:border-black dark:focus:border-emerald-500 text-xs font-semibold text-black dark:text-white placeholder-neutral-500 focus:outline-none"
+              className="w-full px-4 py-3 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 focus:bg-white dark:focus:bg-neutral-900 focus:border-black dark:focus:border-emerald-500 text-xs font-semibold text-black dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none transition"
               required
             />
           </div>
@@ -221,7 +221,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 rounded-xl bg-black dark:bg-emerald-500 hover:bg-neutral-800 dark:hover:bg-emerald-400 text-white dark:text-black font-black text-xs flex items-center justify-center gap-2 transition shadow-lg mt-2 disabled:opacity-50"
+            className="w-full py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-black text-xs flex items-center justify-center gap-2 transition shadow-lg mt-2 disabled:opacity-50"
           >
             <span>{loading ? "Processing..." : mode === "login" ? "Sign In" : "Create Account"}</span>
             <ArrowRight className="h-4 w-4" />
@@ -230,23 +230,25 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
 
         {/* Quick Demo Shortcuts for instant testing */}
         <div className="mt-4 pt-3 border-t border-neutral-100 dark:border-neutral-800">
-          <span className="text-[10px] uppercase font-bold text-neutral-400 block mb-2">
+          <span className="text-[10px] uppercase font-bold text-neutral-400 dark:text-neutral-500 block mb-2">
             One-Click Testing Accounts
           </span>
           <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
               onClick={() => handleQuickDemo("RIDER")}
-              className="p-2 rounded-xl bg-neutral-100 dark:bg-neutral-850 hover:bg-neutral-200 dark:hover:bg-neutral-800 text-neutral-800 dark:text-neutral-200 text-[11px] font-bold transition flex items-center justify-center gap-1"
+              className="p-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-900 hover:bg-neutral-200 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-800 text-neutral-800 dark:text-neutral-200 text-[11px] font-bold transition flex items-center justify-center gap-1.5"
             >
-              <User className="h-3 w-3" /> Demo Rider (Alex)
+              <User className="h-3.5 w-3.5 text-emerald-500" />
+              <span>Demo Rider (Alex)</span>
             </button>
             <button
               type="button"
               onClick={() => handleQuickDemo("DRIVER")}
-              className="p-2 rounded-xl bg-neutral-100 dark:bg-neutral-850 hover:bg-neutral-200 dark:hover:bg-neutral-800 text-neutral-800 dark:text-neutral-200 text-[11px] font-bold transition flex items-center justify-center gap-1"
+              className="p-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-900 hover:bg-neutral-200 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-800 text-neutral-800 dark:text-neutral-200 text-[11px] font-bold transition flex items-center justify-center gap-1.5"
             >
-              <Car className="h-3 w-3" /> Demo Driver (David)
+              <Car className="h-3.5 w-3.5 text-emerald-500" />
+              <span>Demo Driver (David)</span>
             </button>
           </div>
         </div>
