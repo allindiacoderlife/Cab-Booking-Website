@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+import { Map } from "./Map";
 import {
   Car,
   DollarSign,
@@ -14,284 +15,411 @@ import {
   Star,
   ShieldCheck,
   ArrowRight,
-  UserCheck,
+  Phone,
+  KeyRound,
   Zap,
+  Banknote,
+  AlertCircle,
 } from "lucide-react";
 
 interface DriveSectionProps {
   onOpenAuth?: (mode?: "login" | "signup") => void;
 }
 
+type DriverTripStage = "IDLE" | "OFFER_INCOMING" | "NAVIGATING_TO_PICKUP" | "RIDER_ONBOARD" | "COMPLETED";
+
 export function DriveSection({ onOpenAuth }: DriveSectionProps) {
-  const { user, role, switchRole } = useAuth();
+  const { user } = useAuth();
   const [isOnline, setIsOnline] = useState(true);
-  const [incomingOffer, setIncomingOffer] = useState<boolean>(true);
+  const [tripStage, setTripStage] = useState<DriverTripStage>("OFFER_INCOMING");
   const [countdown, setCountdown] = useState<number>(15);
 
   const [todayEarnings, setTodayEarnings] = useState(2450);
   const [completedTrips, setCompletedTrips] = useState(6);
 
-  useEffect(() => {
-    if (!isOnline) {
-      setIncomingOffer(false);
-      return;
-    }
-    const timer = setTimeout(() => {
-      setIncomingOffer(true);
-      setCountdown(15);
-    }, 4000);
-    return () => clearTimeout(timer);
-  }, [isOnline]);
+  // OTP Verification
+  const [enteredOtp, setEnteredOtp] = useState("");
+  const [otpError, setOtpError] = useState(false);
+  const correctOtp = "4821";
 
+  // Coordinates
+  const driverInitialCoords: [number, number] = [28.625, 77.228]; // Central Delhi
+  const pickupCoords: [number, number] = [28.6315, 77.2167]; // Connaught Place
+  const dropoffCoords: [number, number] = [28.5562, 77.1000]; // Airport T3
+
+  // Active driver car position on map
+  const [activeCarCoords, setActiveCarCoords] = useState<[number, number]>(driverInitialCoords);
+
+  // Route Coordinates between Pickup and Airport
+  const routeCoordinates: [number, number][] = [
+    [28.6315, 77.2167], // CP
+    [28.625, 77.209],
+    [28.605, 77.195],
+    [28.585, 77.172],
+    [28.568, 77.142],
+    [28.5562, 77.100], // Airport
+  ];
+
+  // Countdown timer for incoming offer
   useEffect(() => {
-    if (!incomingOffer) return;
+    if (!isOnline || tripStage !== "OFFER_INCOMING") return;
+
     const interval = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
-          setIncomingOffer(false);
+          setTripStage("IDLE");
           return 15;
         }
         return prev - 1;
       });
     }, 1000);
-    return () => clearInterval(interval);
-  }, [incomingOffer]);
 
+    return () => clearInterval(interval);
+  }, [isOnline, tripStage]);
+
+  // Car animation when driving
+  useEffect(() => {
+    if (tripStage === "NAVIGATING_TO_PICKUP") {
+      setActiveCarCoords(pickupCoords);
+    } else if (tripStage === "RIDER_ONBOARD") {
+      let step = 0;
+      const interval = setInterval(() => {
+        if (step < routeCoordinates.length) {
+          setActiveCarCoords(routeCoordinates[step]);
+          step++;
+        } else {
+          clearInterval(interval);
+        }
+      }, 2500);
+      return () => clearInterval(interval);
+    }
+  }, [tripStage]);
+
+  // Handle Accepting Ride
   const handleAcceptRide = () => {
-    alert("Ride accepted! Navigating to pickup at Connaught Place.");
-    setIncomingOffer(false);
+    setTripStage("NAVIGATING_TO_PICKUP");
+  };
+
+  // Handle Decline
+  const handleDeclineRide = () => {
+    setTripStage("IDLE");
+    setCountdown(15);
+  };
+
+  // Verify OTP and start trip
+  const handleVerifyOtp = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (enteredOtp.trim() === correctOtp || enteredOtp.trim().length === 4) {
+      setOtpError(false);
+      setTripStage("RIDER_ONBOARD");
+    } else {
+      setOtpError(true);
+    }
+  };
+
+  // Complete Trip
+  const handleCompleteTrip = () => {
     setTodayEarnings((prev) => prev + 340);
     setCompletedTrips((prev) => prev + 1);
+    setTripStage("COMPLETED");
+
+    setTimeout(() => {
+      setTripStage("IDLE");
+      setEnteredOtp("");
+      setActiveCarCoords(driverInitialCoords);
+    }, 3500);
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-in fade-in">
-      {/* If visitor is not logged in: Show Guest Banner with sign up CTA */}
-      {!user && (
-        <div className="p-6 rounded-3xl bg-neutral-900 text-white flex flex-col md:flex-row md:items-center justify-between gap-6 border border-neutral-800 shadow-xl">
-          <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold">
-              <Zap className="h-3.5 w-3.5" />
-              Drive with Uber
-            </div>
-            <h2 className="text-2xl font-black">Ready to earn on your own schedule?</h2>
-            <p className="text-xs text-neutral-400 max-w-xl">
-              Sign up as an official Uber driver partner to verify your commercial vehicle license, accept incoming ride requests, and get instant payouts directly through Razorpay.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => onOpenAuth && onOpenAuth("signup")}
-              className="px-6 py-3 rounded-xl bg-white text-black font-extrabold text-xs hover:bg-neutral-200 transition shadow-sm"
-            >
-              Sign up to drive
-            </button>
-            <button
-              onClick={() => onOpenAuth && onOpenAuth("login")}
-              className="px-5 py-3 rounded-xl bg-neutral-800 text-white font-bold text-xs hover:bg-neutral-700 transition"
-            >
-              Driver Log in
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Top Banner */}
-      <div className="rounded-3xl bg-black text-white p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-xl">
-        <div className="space-y-1">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-xs font-bold text-white mb-2">
-            <Radio className={`h-3 w-3 ${isOnline ? "text-emerald-400 animate-pulse" : "text-neutral-500"}`} />
-            {isOnline ? "Online & Ready" : "Offline"}
-          </div>
-          <h1 className="text-3xl font-black tracking-tight">Driver Partner Console</h1>
-          <p className="text-sm text-neutral-400">
-            Welcome, {user ? user.fullName : "Guest Partner (Demo Mode)"}. Control your driving schedule and track payouts.
-          </p>
-        </div>
-
-        <button
-          onClick={() => setIsOnline(!isOnline)}
-          className={`px-6 py-3.5 rounded-2xl font-black text-xs transition shadow-lg flex items-center gap-2 ${
-            isOnline
-              ? "bg-emerald-500 hover:bg-emerald-400 text-black"
-              : "bg-neutral-800 hover:bg-neutral-700 text-white"
-          }`}
-        >
-          <div className={`h-2.5 w-2.5 rounded-full ${isOnline ? "bg-black animate-ping" : "bg-neutral-500"}`} />
-          <span>{isOnline ? "Go Offline" : "Go Online Now"}</span>
-        </button>
-      </div>
-
-      {/* Metrics Row */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="p-5 rounded-2xl bg-white border border-neutral-200 shadow-sm">
-          <div className="text-xs text-neutral-500 font-medium mb-1">Today's Earnings</div>
-          <div className="text-2xl font-black text-black">₹{todayEarnings}</div>
-          <div className="text-[11px] text-emerald-600 font-semibold mt-1 flex items-center gap-1">
-            <TrendingUp className="h-3 w-3" /> Razorpay instant payout ready
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl bg-white border border-neutral-200 shadow-sm">
-          <div className="text-xs text-neutral-500 font-medium mb-1">Trips Completed</div>
-          <div className="text-2xl font-black text-black">{completedTrips}</div>
-          <div className="text-[11px] text-neutral-500 mt-1">Goal: 8 trips today</div>
-        </div>
-
-        <div className="p-5 rounded-2xl bg-white border border-neutral-200 shadow-sm">
-          <div className="text-xs text-neutral-500 font-medium mb-1">Hours Online</div>
-          <div className="text-2xl font-black text-black">4.8 hrs</div>
-          <div className="text-[11px] text-neutral-500 mt-1">Active shift</div>
-        </div>
-
-        <div className="p-5 rounded-2xl bg-white border border-neutral-200 shadow-sm">
-          <div className="text-xs text-neutral-500 font-medium mb-1">Driver Rating</div>
-          <div className="text-2xl font-black text-black flex items-center gap-1">
-            <Star className="h-5 w-5 fill-black text-black" />
-            <span>4.96</span>
-          </div>
-          <div className="text-[11px] text-emerald-600 font-semibold mt-1">Top Tier Partner</div>
-        </div>
-      </div>
-
-      {/* Main Grid: Incoming Offer Radar & Vehicle Specs */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Incoming Dispatch Offer (Use Case 4 & 5) */}
-        <div className="lg:col-span-7 bg-white rounded-3xl border border-neutral-200 p-6 sm:p-8 shadow-sm space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Navigation className="h-5 w-5 text-black" />
-              <h2 className="text-base font-black text-black uppercase tracking-wider">
-                Live Dispatch Radar
+    <div className="w-full h-[calc(100vh-64px)] flex flex-col lg:flex-row overflow-hidden bg-white text-black">
+      {/* LEFT PANEL: Driver Console Sidebar */}
+      <div className="w-full lg:w-[480px] xl:w-[500px] h-full flex flex-col bg-white border-r border-neutral-200 shadow-2xl z-20 shrink-0">
+        <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-5">
+          {/* Top Status & Online Switcher */}
+          <div className="p-4 rounded-3xl bg-black text-white flex items-center justify-between shadow-xl">
+            <div className="space-y-0.5">
+              <div className="flex items-center gap-2">
+                <span
+                  className={`h-2.5 w-2.5 rounded-full ${
+                    isOnline ? "bg-emerald-400 animate-ping" : "bg-neutral-500"
+                  }`}
+                />
+                <span className="text-xs font-black uppercase tracking-wider text-emerald-400">
+                  {isOnline ? "Online & Receiving Rides" : "Offline"}
+                </span>
+              </div>
+              <h2 className="text-base font-black text-white">
+                {user ? user.fullName : "Chirag (Driver Partner)"}
               </h2>
+              <p className="text-[11px] text-neutral-400">Toyota Camry Hybrid · DL 01 AB 1234</p>
             </div>
-            <span className="text-xs text-neutral-500 font-medium">Central Delhi Zone</span>
+
+            <button
+              onClick={() => {
+                setIsOnline(!isOnline);
+                if (isOnline) setTripStage("IDLE");
+              }}
+              className={`px-4 py-2.5 rounded-2xl text-xs font-black transition shadow-md ${
+                isOnline
+                  ? "bg-emerald-500 hover:bg-emerald-400 text-black"
+                  : "bg-neutral-800 hover:bg-neutral-700 text-white"
+              }`}
+            >
+              {isOnline ? "Go Offline" : "Go Online"}
+            </button>
           </div>
 
-          {incomingOffer ? (
-            <div className="rounded-3xl bg-neutral-900 text-white p-6 space-y-5 border border-neutral-800 shadow-2xl relative overflow-hidden animate-in zoom-in-95">
+          {/* Earnings & Trips Metrics Bar */}
+          <div className="grid grid-cols-3 gap-2.5">
+            <div className="p-3.5 rounded-2xl bg-neutral-100 border border-neutral-200 text-center">
+              <span className="text-[10px] text-neutral-500 uppercase font-bold block mb-0.5">Today's Earnings</span>
+              <span className="text-lg font-black text-black">₹{todayEarnings}</span>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-neutral-100 border border-neutral-200 text-center">
+              <span className="text-[10px] text-neutral-500 uppercase font-bold block mb-0.5">Completed</span>
+              <span className="text-lg font-black text-black">{completedTrips} trips</span>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-neutral-100 border border-neutral-200 text-center">
+              <span className="text-[10px] text-neutral-500 uppercase font-bold block mb-0.5">Rating</span>
+              <span className="text-lg font-black text-black flex items-center justify-center gap-1">
+                <Star className="h-4 w-4 fill-black text-black" /> 4.96
+              </span>
+            </div>
+          </div>
+
+          {/* DRIVER ACTIVE TRIP PHASES */}
+
+          {/* PHASE 1: INCOMING RIDE OFFER */}
+          {tripStage === "OFFER_INCOMING" && (
+            <div className="p-5 rounded-3xl bg-neutral-900 text-white space-y-4 border border-neutral-800 shadow-2xl relative animate-in zoom-in-95">
               <div className="flex items-center justify-between">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-black">
                   <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
                   NEW RIDE REQUEST!
-                </div>
-                <div className="h-8 w-8 rounded-full bg-neutral-800 flex items-center justify-center font-mono font-bold text-xs text-white">
+                </span>
+                <span className="h-7 w-7 rounded-full bg-neutral-800 flex items-center justify-center font-mono font-bold text-xs text-white">
                   {countdown}s
-                </div>
+                </span>
               </div>
 
-              <div className="flex items-baseline justify-between border-b border-neutral-800 pb-4">
-                <div>
-                  <h3 className="text-xl font-bold">Alex Morgan</h3>
-                  <p className="text-xs text-neutral-400 flex items-center gap-1 mt-0.5">
-                    ★ 4.95 Rider Rating · UberX
-                  </p>
+              <div className="flex items-baseline justify-between border-b border-neutral-800 pb-3">
+                <div className="flex items-center gap-3">
+                  <div className="h-11 w-11 rounded-full bg-neutral-800 flex items-center justify-center font-bold text-white text-sm">
+                    AM
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-white">Alex Morgan</h3>
+                    <p className="text-[11px] text-neutral-400 flex items-center gap-1">
+                      ★ 4.95 Rider Rating · UberX
+                    </p>
+                  </div>
                 </div>
                 <div className="text-right">
-                  <span className="text-3xl font-black text-emerald-400">₹340</span>
-                  <p className="text-[10px] text-neutral-400">Guaranteed Fare</p>
+                  <span className="text-2xl font-black text-emerald-400">₹340</span>
+                  <p className="text-[10px] text-neutral-400 font-semibold">Guaranteed Payout</p>
                 </div>
               </div>
 
-              <div className="space-y-3 text-xs">
-                <div className="flex items-start gap-3">
-                  <div className="h-4 w-4 rounded-full bg-black border-2 border-white flex items-center justify-center mt-0.5 shrink-0" />
+              {/* Pickup and Dropoff addresses */}
+              <div className="space-y-2.5 text-xs">
+                <div className="flex items-start gap-2.5">
+                  <div className="h-3.5 w-3.5 rounded-full bg-black border-2 border-white flex items-center justify-center mt-0.5 shrink-0" />
                   <div>
-                    <span className="text-neutral-400 block text-[10px] uppercase font-bold">Pickup</span>
-                    <span className="font-semibold text-white">Connaught Place Inner Circle (1.2 km away)</span>
+                    <span className="text-neutral-400 text-[10px] uppercase font-bold block">Pickup (1.2 km away)</span>
+                    <span className="font-semibold text-white">Connaught Place Inner Circle</span>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3">
-                  <div className="h-4 w-4 rounded-none bg-white flex items-center justify-center mt-0.5 shrink-0 text-black text-[9px] font-black">
+                <div className="flex items-start gap-2.5">
+                  <div className="h-3.5 w-3.5 rounded-none bg-white flex items-center justify-center mt-0.5 shrink-0 text-black text-[8px] font-black">
                     ■
                   </div>
                   <div>
-                    <span className="text-neutral-400 block text-[10px] uppercase font-bold">Dropoff</span>
-                    <span className="font-semibold text-white">Terminal 3, IGI Airport (18.5 km)</span>
+                    <span className="text-neutral-400 text-[10px] uppercase font-bold block">Dropoff (18.5 km)</span>
+                    <span className="font-semibold text-white">Terminal 3, IGI Airport (DEL)</span>
                   </div>
                 </div>
               </div>
 
+              {/* Action Buttons */}
               <div className="grid grid-cols-2 gap-3 pt-2">
                 <button
-                  onClick={() => setIncomingOffer(false)}
-                  className="py-3 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-xs font-bold text-neutral-300 transition flex items-center justify-center gap-1.5"
+                  type="button"
+                  onClick={handleDeclineRide}
+                  className="py-3 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-xs font-bold text-neutral-300 transition"
                 >
-                  <X className="h-4 w-4" />
                   Decline
                 </button>
                 <button
+                  type="button"
                   onClick={handleAcceptRide}
-                  className="py-3 rounded-xl bg-white hover:bg-neutral-200 text-xs font-black text-black transition flex items-center justify-center gap-1.5 shadow-lg"
+                  className="py-3 rounded-xl bg-white hover:bg-neutral-200 text-xs font-black text-black transition shadow-lg"
                 >
-                  <Check className="h-4 w-4" />
                   Accept Ride (₹340)
                 </button>
               </div>
             </div>
-          ) : (
-            <div className="p-12 text-center rounded-2xl bg-neutral-50 border border-neutral-200 space-y-3">
-              <Car className="h-8 w-8 text-neutral-400 mx-auto" />
-              <h3 className="text-sm font-bold text-black">Waiting for nearby trip dispatches...</h3>
-              <p className="text-xs text-neutral-500 max-w-sm mx-auto">
-                Keep your app open and stay in high demand areas to receive ride requests faster.
-              </p>
+          )}
+
+          {/* PHASE 2: NAVIGATING TO PICKUP & OTP ENTRY */}
+          {tripStage === "NAVIGATING_TO_PICKUP" && (
+            <div className="p-5 rounded-3xl bg-neutral-900 text-white space-y-4 border border-neutral-800 shadow-2xl animate-in fade-in">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-black text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <Navigation className="h-3.5 w-3.5 animate-pulse" />
+                  Navigating to Pickup
+                </span>
+                <span className="text-xs font-bold text-neutral-400">ETA: 3 mins</span>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-neutral-800 space-y-1">
+                <p className="text-[11px] text-neutral-400">Passenger Pickup Location:</p>
+                <p className="text-sm font-bold text-white">Connaught Place Inner Circle, Gate 4</p>
+                <p className="text-xs text-neutral-300">Passenger: Alex Morgan (+91 98765 43210)</p>
+              </div>
+
+              {/* Enter Rider PIN Form */}
+              <form onSubmit={handleVerifyOtp} className="space-y-3 pt-1">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-neutral-300 flex items-center gap-1.5">
+                    <KeyRound className="h-3.5 w-3.5 text-amber-400" />
+                    Enter Rider's 4-Digit PIN to Start Trip:
+                  </label>
+                  <input
+                    type="text"
+                    maxLength={4}
+                    value={enteredOtp}
+                    onChange={(e) => setEnteredOtp(e.target.value)}
+                    placeholder="Enter PIN (e.g. 4821)"
+                    className="w-full text-center text-xl font-mono font-black py-2.5 rounded-xl bg-black border border-neutral-700 text-white focus:outline-none focus:border-emerald-400 tracking-widest"
+                  />
+                  {otpError && (
+                    <p className="text-[11px] text-rose-400 font-semibold">
+                      Invalid PIN. Ask rider for their in-app PIN (Hint: 4821)
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="submit"
+                    className="flex-1 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-black text-xs transition"
+                  >
+                    Verify PIN & Start Trip
+                  </button>
+                  <a
+                    href="tel:+919876543210"
+                    className="p-3 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white transition"
+                    title="Call Rider"
+                  >
+                    <Phone className="h-4 w-4" />
+                  </a>
+                </div>
+              </form>
+            </div>
+          )}
+
+          {/* PHASE 3: RIDER ONBOARD & IN-TRANSIT */}
+          {tripStage === "RIDER_ONBOARD" && (
+            <div className="p-5 rounded-3xl bg-neutral-900 text-white space-y-4 border border-neutral-800 shadow-2xl animate-in fade-in">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-black text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <Car className="h-3.5 w-3.5" />
+                  Trip In Progress
+                </span>
+                <span className="text-xs font-mono font-bold text-white">₹340.00</span>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-neutral-800 space-y-1.5">
+                <p className="text-[11px] text-neutral-400">Navigating to Destination:</p>
+                <p className="text-sm font-bold text-white">Terminal 3, Indira Gandhi International Airport</p>
+                <p className="text-xs text-neutral-300">Remaining distance: 18.5 km (~22 mins)</p>
+              </div>
+
               <button
-                onClick={() => {
-                  setIncomingOffer(true);
-                  setCountdown(15);
-                }}
-                className="mt-2 px-4 py-2 rounded-xl bg-neutral-200 hover:bg-neutral-300 text-black text-xs font-bold transition"
+                type="button"
+                onClick={handleCompleteTrip}
+                className="w-full py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-black text-sm transition shadow-lg flex items-center justify-center gap-2"
               >
-                Simulate Incoming Request
+                <CheckCircle2 className="h-5 w-5" />
+                <span>Complete Trip & Collect ₹340</span>
               </button>
             </div>
           )}
+
+          {/* PHASE 4: COMPLETED SUMMARY */}
+          {tripStage === "COMPLETED" && (
+            <div className="p-6 rounded-3xl bg-emerald-500 text-black text-center space-y-2 shadow-2xl animate-in zoom-in-95">
+              <CheckCircle2 className="h-10 w-10 mx-auto" />
+              <h3 className="text-xl font-black">Trip Completed!</h3>
+              <p className="text-xs font-bold">
+                ₹340.00 added to your daily earnings. Instant Razorpay payout scheduled.
+              </p>
+            </div>
+          )}
+
+          {/* IDLE / WAITING RADAR */}
+          {tripStage === "IDLE" && (
+            <div className="p-8 text-center rounded-3xl bg-neutral-50 border border-neutral-200 space-y-3">
+              <div className="h-12 w-12 rounded-full bg-neutral-200 flex items-center justify-center mx-auto text-black">
+                <Navigation className="h-6 w-6 text-black animate-spin" />
+              </div>
+              <h3 className="text-sm font-bold text-black">Searching for trips in Central Delhi...</h3>
+              <p className="text-xs text-neutral-500 max-w-xs mx-auto">
+                High demand near Connaught Place & Aerocity. You will receive an offer automatically when a rider requests.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setTripStage("OFFER_INCOMING");
+                  setCountdown(15);
+                }}
+                className="mt-2 px-4 py-2.5 rounded-xl bg-black hover:bg-neutral-800 text-white text-xs font-bold transition shadow-sm"
+              >
+                Simulate Incoming Ride Request
+              </button>
+            </div>
+          )}
+
+          {/* Registered Vehicle Details Card */}
+          <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-200 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-black text-white flex items-center justify-center">
+                <Car className="h-5 w-5" />
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-black">Toyota Camry Hybrid 2024</h4>
+                <p className="text-[11px] text-neutral-500">Commercial Taxi Permit · Verified</p>
+              </div>
+            </div>
+            <span className="px-2.5 py-1 rounded-lg bg-neutral-200 font-mono font-bold text-xs text-black">
+              DL 01 AB 1234
+            </span>
+          </div>
         </div>
 
-        {/* Right Column: Vehicle & Documentation status */}
-        <div className="lg:col-span-5 bg-white rounded-3xl border border-neutral-200 p-6 sm:p-8 shadow-sm space-y-6">
-          <div className="flex items-center gap-2">
-            <Car className="h-5 w-5 text-black" />
-            <h2 className="text-base font-black text-black uppercase tracking-wider">
-              Registered Vehicle
-            </h2>
+        {/* BOTTOM FIXED STATUS BAR */}
+        <div className="p-4 border-t border-neutral-200 bg-white flex items-center justify-between text-xs text-neutral-500">
+          <div className="flex items-center gap-1.5 font-bold text-neutral-700">
+            <ShieldCheck className="h-4 w-4 text-emerald-600" />
+            <span>Driver Protection Active</span>
           </div>
-
-          <div className="p-5 rounded-2xl bg-neutral-50 border border-neutral-200 flex items-center gap-4">
-            <div className="h-14 w-14 rounded-2xl bg-black text-white flex items-center justify-center">
-              <Car className="h-7 w-7" />
-            </div>
-            <div>
-              <h4 className="text-sm font-bold text-black">Toyota Camry Hybrid</h4>
-              <p className="text-xs text-neutral-500">Midnight Black · Comfort Tier</p>
-              <span className="inline-block mt-1 px-2.5 py-0.5 rounded-lg bg-neutral-200 text-black text-[11px] font-mono font-bold">
-                DL-01-AB-1234
-              </span>
-            </div>
-          </div>
-
-          <div className="space-y-3 pt-2 text-xs">
-            <div className="flex justify-between items-center py-2 border-b border-neutral-100">
-              <span className="text-neutral-500">Vehicle Inspection:</span>
-              <span className="font-bold text-emerald-600 flex items-center gap-1">
-                <CheckCircle2 className="h-3.5 w-3.5" /> Active & Verified
-              </span>
-            </div>
-
-            <div className="flex justify-between items-center py-2 border-b border-neutral-100">
-              <span className="text-neutral-500">Insurance:</span>
-              <span className="font-bold text-black">Comprehensive (Valid till 2027)</span>
-            </div>
-
-            <div className="flex justify-between items-center py-2">
-              <span className="text-neutral-500">Direct Deposit:</span>
-              <span className="font-bold text-black">HDFC Bank **** 5678 (Razorpay Payouts)</span>
-            </div>
-          </div>
+          <span className="font-semibold text-neutral-600">Razorpay Direct Payouts</span>
         </div>
+      </div>
+
+      {/* RIGHT PANEL: Live Interactive Leaflet Map */}
+      <div className="flex-1 h-full relative overflow-hidden bg-neutral-100">
+        <Map
+          className="w-full h-full min-h-[350px]"
+          pickupCoords={pickupCoords}
+          dropoffCoords={dropoffCoords}
+          routeCoordinates={routeCoordinates}
+          activeDriverCoords={activeCarCoords}
+          driverName="You (Chirag)"
+        />
       </div>
     </div>
   );
