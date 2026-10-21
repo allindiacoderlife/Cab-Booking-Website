@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { Map } from "./Map";
 import { CancelModal } from "./CancelModal";
 import { RatingModal } from "./RatingModal";
-import { processRazorpayPayment } from "../lib/razorpay";
+import { RazorpayModal } from "./RazorpayModal";
 import { getApiUrl } from "../lib/api";
 import {
   Car,
@@ -259,6 +259,8 @@ export function RideSection({
   // Modals
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
+  const [isRazorpayModalOpen, setIsRazorpayModalOpen] = useState(false);
+  const [pendingRazorpayRideId, setPendingRazorpayRideId] = useState("");
   const [sosActive, setSosActive] = useState(false);
 
   // Nearby simulated drivers
@@ -491,73 +493,64 @@ export function RideSection({
     }
 
     // Razorpay Online Payment Booking
-    setIsProcessingPayment(true);
-    processRazorpayPayment({
-      amount: finalFare,
-      currency: "INR",
-      rideId: `CABGO-${Math.floor(100000 + Math.random() * 900000)}`,
-      riderName: user.fullName,
-      riderEmail: user.email,
-      riderPhone: user.phone || "+919876543210",
-      onSuccess: async (paymentId) => {
-        setIsProcessingPayment(false);
-        const rideData = {
-          id: `CABGO-${Math.floor(100000 + Math.random() * 900000)}`,
-          pickupAddress: pickupText,
-          dropoffAddress: dropoffText,
-          fare: finalFare,
-          paymentId,
-          paymentMethod: "Razorpay (UPI / Online)",
-          status: "REQUESTED" as const,
-          vehicleCategory: selectedTier.name,
-          isPaid: true,
-          driverName: "David Chen",
-          driverRating: 4.95,
-          vehiclePlate: "DL 01 AB 8842",
-          vehicleModel: `${selectedTier.name} (White Camry)`,
-          date: new Date().toLocaleDateString("en-IN", {
-            day: "numeric",
-            month: "short",
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-          distanceKm,
-          durationMins,
-        };
-        setActiveRide(rideData);
-        saveRideToLocal(rideData);
+    const newRideId = `CABGO-${Math.floor(100000 + Math.random() * 900000)}`;
+    setPendingRazorpayRideId(newRideId);
+    setIsRazorpayModalOpen(true);
+  };
 
-        fetch(getApiUrl("/api/rides/request"), {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            id: rideData.id,
-            riderId: user.id,
-            riderEmail: user.email,
-            riderName: user.fullName,
-            pickupAddress: pickupText,
-            pickupLat: pickupCoords[0],
-            pickupLng: pickupCoords[1],
-            dropoffAddress: dropoffText,
-            dropoffLat: dropoffCoords[0],
-            dropoffLng: dropoffCoords[1],
-            stops,
-            vehicleCategory: selectedTier.id.toUpperCase(),
-            fare: finalFare,
-            distanceKm,
-            durationMins,
-            promoCode: promoCode || undefined,
-            discount: discountAmount,
-            paymentId,
-            paymentMethod: "Razorpay",
-          }),
-        }).catch(console.warn);
-      },
-      onFailure: (err) => {
-        setIsProcessingPayment(false);
-        console.error("Razorpay failed", err);
-      },
-    });
+  const handleRazorpaySuccess = (paymentId: string) => {
+    const rideId = pendingRazorpayRideId || `CABGO-${Math.floor(100000 + Math.random() * 900000)}`;
+    const rideData = {
+      id: rideId,
+      pickupAddress: pickupText,
+      dropoffAddress: dropoffText,
+      fare: finalFare,
+      paymentId,
+      paymentMethod: "Razorpay (UPI / Online)",
+      status: "REQUESTED" as const,
+      vehicleCategory: selectedTier.name,
+      isPaid: true,
+      driverName: "David Chen",
+      driverRating: 4.95,
+      vehiclePlate: "DL 01 AB 8842",
+      vehicleModel: `${selectedTier.name} (White Camry)`,
+      date: new Date().toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      distanceKm,
+      durationMins,
+    };
+    setActiveRide(rideData);
+    saveRideToLocal(rideData);
+
+    fetch(getApiUrl("/api/rides/request"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: rideData.id,
+        riderId: user?.id,
+        riderEmail: user?.email,
+        riderName: user?.fullName,
+        pickupAddress: pickupText,
+        pickupLat: pickupCoords[0],
+        pickupLng: pickupCoords[1],
+        dropoffAddress: dropoffText,
+        dropoffLat: dropoffCoords[0],
+        dropoffLng: dropoffCoords[1],
+        stops,
+        vehicleCategory: selectedTier.id.toUpperCase(),
+        fare: finalFare,
+        distanceKm,
+        durationMins,
+        promoCode: promoCode || undefined,
+        discount: discountAmount,
+        paymentId,
+        paymentMethod: "Razorpay",
+      }),
+    }).catch(console.warn);
   };
 
   const handleTriggerSOS = async () => {
@@ -1092,6 +1085,18 @@ export function RideSection({
           setActiveRide(null);
           setRideStage("IDLE");
         }}
+      />
+
+      {/* Authentic Razorpay Checkout Modal */}
+      <RazorpayModal
+        isOpen={isRazorpayModalOpen}
+        onClose={() => setIsRazorpayModalOpen(false)}
+        amount={finalFare}
+        rideId={pendingRazorpayRideId}
+        riderName={user?.fullName || "CabGo Customer"}
+        riderEmail={user?.email || "customer@cabgo.com"}
+        riderPhone={user?.phone || "+91 98765 43210"}
+        onSuccess={handleRazorpaySuccess}
       />
     </div>
   );
