@@ -199,6 +199,23 @@ function generateCurvedWaypoints(start: [number, number], end: [number, number],
   return points;
 }
 
+// Helper: persist rides locally for instant Activity sync
+function saveRideToLocal(ride: any) {
+  try {
+    const existingStr = localStorage.getItem("cabgo_user_rides");
+    const existing = existingStr ? JSON.parse(existingStr) : [];
+    const index = existing.findIndex((r: any) => r.id === ride.id);
+    if (index >= 0) {
+      existing[index] = { ...existing[index], ...ride };
+    } else {
+      existing.unshift(ride);
+    }
+    localStorage.setItem("cabgo_user_rides", JSON.stringify(existing));
+  } catch (e) {
+    console.warn("Local ride save failed:", e);
+  }
+}
+
 export function RideSection({
   initialPickup = "Connaught Place, New Delhi",
   initialDropoff = "Indira Gandhi International Airport (DEL)",
@@ -318,6 +335,13 @@ export function RideSection({
           clearInterval(interval);
           setRideStage("COMPLETED");
           setIsRatingModalOpen(true);
+          if (activeRide) {
+            saveRideToLocal({ ...activeRide, status: "COMPLETED" });
+            fetch(getApiUrl(`/api/rides/${activeRide.id}/complete`), {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+            }).catch(console.warn);
+          }
           return prev;
         }
         return prev + 1;
@@ -418,21 +442,34 @@ export function RideSection({
         dropoffAddress: dropoffText,
         fare: finalFare,
         paymentId: "CASH_ON_DROP",
-        status: "REQUESTED",
+        paymentMethod: "Cash on Drop",
+        status: "REQUESTED" as const,
         vehicleCategory: selectedTier.name,
         isPaid: false,
         driverName: "David Chen",
-        driverRating: 4.92,
+        driverRating: 4.95,
         vehiclePlate: "DL 01 AB 8842",
         vehicleModel: `${selectedTier.name} (White Camry)`,
+        date: new Date().toLocaleDateString("en-IN", {
+          day: "numeric",
+          month: "short",
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        distanceKm,
+        durationMins,
       };
       setActiveRide(rideData);
+      saveRideToLocal(rideData);
 
       fetch(getApiUrl("/api/rides/request"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          id: rideData.id,
           riderId: user.id,
+          riderEmail: user.email,
+          riderName: user.fullName,
           pickupAddress: pickupText,
           pickupLat: pickupCoords[0],
           pickupLng: pickupCoords[1],
@@ -470,21 +507,34 @@ export function RideSection({
           dropoffAddress: dropoffText,
           fare: finalFare,
           paymentId,
-          status: "REQUESTED",
+          paymentMethod: "Razorpay (UPI / Online)",
+          status: "REQUESTED" as const,
           vehicleCategory: selectedTier.name,
           isPaid: true,
           driverName: "David Chen",
-          driverRating: 4.92,
+          driverRating: 4.95,
           vehiclePlate: "DL 01 AB 8842",
           vehicleModel: `${selectedTier.name} (White Camry)`,
+          date: new Date().toLocaleDateString("en-IN", {
+            day: "numeric",
+            month: "short",
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+          distanceKm,
+          durationMins,
         };
         setActiveRide(rideData);
+        saveRideToLocal(rideData);
 
         fetch(getApiUrl("/api/rides/request"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
+            id: rideData.id,
             riderId: user.id,
+            riderEmail: user.email,
+            riderName: user.fullName,
             pickupAddress: pickupText,
             pickupLat: pickupCoords[0],
             pickupLng: pickupCoords[1],
@@ -499,6 +549,7 @@ export function RideSection({
             promoCode: promoCode || undefined,
             discount: discountAmount,
             paymentId,
+            paymentMethod: "Razorpay",
           }),
         }).catch(console.warn);
       },
@@ -1023,6 +1074,9 @@ export function RideSection({
         onClose={() => setIsCancelModalOpen(false)}
         rideId={activeRide?.id}
         onCancelled={() => {
+          if (activeRide) {
+            saveRideToLocal({ ...activeRide, status: "CANCELLED" });
+          }
           setActiveRide(null);
           setRideStage("IDLE");
         }}

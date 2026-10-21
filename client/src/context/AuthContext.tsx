@@ -102,6 +102,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     saveState(mappedUser, preferredRole);
 
+    // Clean OAuth hash from address bar if present
+    if (typeof window !== "undefined" && window.location.hash && window.location.hash.includes("access_token")) {
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    }
+
     // Sync user into backend PostgreSQL via Prisma
     fetch(getApiUrl("/api/auth/sync"), {
       method: "POST",

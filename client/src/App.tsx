@@ -208,7 +208,10 @@ function MainContent() {
 
         {/* TAB 4: ACTIVITY & INVOICES */}
         {activeTab === "activity" && (
-          <ActivitySection onRateTrip={handleRatePastTrip} />
+          <ActivitySection
+            onRateTrip={handleRatePastTrip}
+            onNavigateToRide={() => setActiveTab("ride")}
+          />
         )}
 
         {/* TAB 5: HELP & SUPPORT */}
