@@ -11,15 +11,21 @@ import {
   ArrowRight,
   Menu,
   X,
+  History,
+  Shield,
+  Settings,
 } from "lucide-react";
 
+export type NavTab = "home" | "ride" | "drive" | "activity" | "support" | "about";
+
 interface NavbarProps {
-  activeTab: "home" | "ride" | "drive" | "about";
-  setActiveTab: (tab: "home" | "ride" | "drive" | "about") => void;
+  activeTab: NavTab;
+  setActiveTab: (tab: NavTab) => void;
   onOpenAuth: (mode?: "login" | "signup") => void;
+  onOpenProfile: () => void;
 }
 
-export function Navbar({ activeTab, setActiveTab, onOpenAuth }: NavbarProps) {
+export function Navbar({ activeTab, setActiveTab, onOpenAuth, onOpenProfile }: NavbarProps) {
   const { user, role, switchRole, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -58,14 +64,26 @@ export function Navbar({ activeTab, setActiveTab, onOpenAuth }: NavbarProps) {
               Drive
             </button>
             <button
-              onClick={() => setActiveTab("home")}
-              className={`px-3.5 py-2 rounded-full text-sm font-semibold transition ${
-                activeTab === "home"
+              onClick={() => setActiveTab("activity")}
+              className={`px-3.5 py-2 rounded-full text-sm font-semibold transition flex items-center gap-1.5 ${
+                activeTab === "activity"
                   ? "bg-neutral-800 text-white"
                   : "text-neutral-300 hover:text-white hover:bg-neutral-900"
               }`}
             >
-              Business
+              <History className="h-3.5 w-3.5" />
+              Activity
+            </button>
+            <button
+              onClick={() => setActiveTab("support")}
+              className={`px-3.5 py-2 rounded-full text-sm font-semibold transition flex items-center gap-1.5 ${
+                activeTab === "support"
+                  ? "bg-neutral-800 text-white"
+                  : "text-neutral-300 hover:text-white hover:bg-neutral-900"
+              }`}
+            >
+              <HelpCircle className="h-3.5 w-3.5" />
+              Help
             </button>
             <button
               onClick={() => setActiveTab("about")}
@@ -87,7 +105,10 @@ export function Navbar({ activeTab, setActiveTab, onOpenAuth }: NavbarProps) {
               <Globe className="h-4 w-4" />
               <span>EN</span>
             </button>
-            <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-neutral-900 transition">
+            <button
+              onClick={() => setActiveTab("support")}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-neutral-900 transition"
+            >
               <HelpCircle className="h-4 w-4" />
               <span>Help</span>
             </button>
@@ -140,7 +161,7 @@ export function Navbar({ activeTab, setActiveTab, onOpenAuth }: NavbarProps) {
               {dropdownOpen && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)} />
-                  <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-neutral-900 border border-neutral-800 shadow-2xl z-50 p-2 text-xs">
+                  <div className="absolute right-0 mt-2 w-60 rounded-2xl bg-neutral-900 border border-neutral-800 shadow-2xl z-50 p-2 text-xs">
                     <div className="px-3 py-2 border-b border-neutral-800 mb-1">
                       <p className="font-bold text-white">{user.fullName}</p>
                       <p className="text-[11px] text-neutral-400 truncate">{user.email}</p>
@@ -148,6 +169,28 @@ export function Navbar({ activeTab, setActiveTab, onOpenAuth }: NavbarProps) {
                         {role} Account
                       </span>
                     </div>
+
+                    <button
+                      onClick={() => {
+                        setDropdownOpen(false);
+                        onOpenProfile();
+                      }}
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-neutral-200 hover:bg-neutral-800 transition"
+                    >
+                      <Settings className="h-4 w-4 text-neutral-400" />
+                      Account & Safety Settings
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setDropdownOpen(false);
+                        setActiveTab("activity");
+                      }}
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-neutral-200 hover:bg-neutral-800 transition"
+                    >
+                      <History className="h-4 w-4 text-neutral-400" />
+                      My Trips & Receipts
+                    </button>
 
                     <button
                       onClick={() => {
@@ -225,6 +268,24 @@ export function Navbar({ activeTab, setActiveTab, onOpenAuth }: NavbarProps) {
             className="w-full text-left py-2 text-sm font-semibold text-white"
           >
             Drive
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab("activity");
+              setMobileMenuOpen(false);
+            }}
+            className="w-full text-left py-2 text-sm font-semibold text-white"
+          >
+            Activity & Receipts
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab("support");
+              setMobileMenuOpen(false);
+            }}
+            className="w-full text-left py-2 text-sm font-semibold text-white"
+          >
+            Help Center
           </button>
           <button
             onClick={() => {

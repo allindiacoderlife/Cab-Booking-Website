@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Map } from "./Map";
+import { CancelModal } from "./CancelModal";
+import { RatingModal } from "./RatingModal";
 import { processRazorpayPayment } from "../lib/razorpay";
 import { getApiUrl } from "../lib/api";
 import {
@@ -16,7 +18,10 @@ import {
   ArrowRight,
   CheckCircle2,
   X,
-  Check,
+  Phone,
+  ShieldAlert,
+  Star,
+  Navigation,
 } from "lucide-react";
 
 interface RideSectionProps {
@@ -74,6 +79,8 @@ const VEHICLE_TIERS: VehicleTier[] = [
   },
 ];
 
+type RideStage = "IDLE" | "SEARCHING" | "ASSIGNED" | "ARRIVING" | "ON_TRIP" | "COMPLETED";
+
 export function RideSection({
   initialPickup = "Connaught Place, New Delhi",
   initialDropoff = "Indira Gandhi International Airport (DEL)",
@@ -97,6 +104,12 @@ export function RideSection({
 
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [activeRide, setActiveRide] = useState<any | null>(null);
+  const [rideStage, setRideStage] = useState<RideStage>("IDLE");
+  const [driverCoordIndex, setDriverCoordIndex] = useState(0);
+
+  // Modals
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
   const [sosActive, setSosActive] = useState(false);
 
   // Simulated nearby drivers in New Delhi NCR
@@ -107,10 +120,11 @@ export function RideSection({
     { id: "d4", lat: 28.595, lng: 77.210, angle: 180 },
   ]);
 
-  // Simulated road polyline coordinates between Connaught Place and Airport
+  // Route Polyline Coordinates between Connaught Place and Airport
   const routeCoordinates: [number, number][] = [
     [28.6315, 77.2167], // CP
     [28.625, 77.209],
+    [28.6139, 77.209],
     [28.605, 77.195],
     [28.585, 77.172],
     [28.568, 77.142],
@@ -120,6 +134,56 @@ export function RideSection({
   // Calculate fare
   const rawFare = selectedTier.basePrice + distanceKm * selectedTier.perKm + stops.length * 60;
   const finalFare = Math.max(80, Math.round(rawFare - discountAmount));
+
+  // Ride lifecycle simulation
+  useEffect(() => {
+    if (!activeRide) {
+      setRideStage("IDLE");
+      setDriverCoordIndex(0);
+      return;
+    }
+
+    // Step 1: SEARCHING -> ASSIGNED (after 2s)
+    setRideStage("SEARCHING");
+    const t1 = setTimeout(() => {
+      setRideStage("ASSIGNED");
+    }, 2500);
+
+    // Step 2: ASSIGNED -> ARRIVING (after 5s)
+    const t2 = setTimeout(() => {
+      setRideStage("ARRIVING");
+    }, 6000);
+
+    // Step 3: ARRIVING -> ON_TRIP (after 10s)
+    const t3 = setTimeout(() => {
+      setRideStage("ON_TRIP");
+    }, 11000);
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
+  }, [activeRide?.id]);
+
+  // Animate driver moving along route during ON_TRIP
+  useEffect(() => {
+    if (rideStage !== "ON_TRIP") return;
+
+    const interval = setInterval(() => {
+      setDriverCoordIndex((prev) => {
+        if (prev >= routeCoordinates.length - 1) {
+          clearInterval(interval);
+          setRideStage("COMPLETED");
+          setIsRatingModalOpen(true);
+          return prev;
+        }
+        return prev + 1;
+      });
+    }, 3500);
+
+    return () => clearInterval(interval);
+  }, [rideStage]);
 
   const handleApplyPromo = (e: React.FormEvent) => {
     e.preventDefault();
@@ -206,10 +270,14 @@ export function RideSection({
               ...data.ride,
               paymentId,
               isPaid: true,
+              driverName: "David Chen",
+              driverPhone: "+91 98765 43210",
+              driverRating: 4.92,
+              vehiclePlate: "DL 01 AB 8842",
+              vehicleModel: `${selectedTier.name} (White Camry)`,
             });
           }
-        } catch (err) {
-          console.warn("Backend error, using local active ride:", err);
+        } catch {
           setActiveRide({
             id: `UBER-${Date.now().toString().slice(-6)}`,
             pickupAddress: pickup,
@@ -219,6 +287,11 @@ export function RideSection({
             status: "REQUESTED",
             vehicleCategory: selectedTier.name,
             isPaid: true,
+            driverName: "David Chen",
+            driverPhone: "+91 98765 43210",
+            driverRating: 4.92,
+            vehiclePlate: "DL 01 AB 8842",
+            vehicleModel: `${selectedTier.name} (White Camry)`,
           });
         }
       },
@@ -247,6 +320,13 @@ export function RideSection({
     setTimeout(() => setSosActive(false), 5000);
   };
 
+  const currentDriverCoords =
+    rideStage === "ON_TRIP"
+      ? routeCoordinates[driverCoordIndex]
+      : rideStage === "ASSIGNED" || rideStage === "ARRIVING"
+      ? [28.625, 77.212] as [number, number]
+      : undefined;
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-in fade-in">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -254,39 +334,89 @@ export function RideSection({
         <div className="lg:col-span-5 space-y-5">
           {/* Active Ride Card (If booked) */}
           {activeRide && (
-            <div className="p-5 rounded-2xl bg-black text-white border border-neutral-800 space-y-4 shadow-2xl animate-in zoom-in-95">
+            <div className="p-5 rounded-3xl bg-black text-white border border-neutral-800 space-y-4 shadow-2xl animate-in zoom-in-95">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="h-3 w-3 rounded-full bg-emerald-400 animate-ping" />
+                  <span
+                    className={`h-3 w-3 rounded-full ${
+                      rideStage === "COMPLETED"
+                        ? "bg-emerald-400"
+                        : "bg-emerald-400 animate-ping"
+                    }`}
+                  />
                   <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">
-                    Ride Confirmed & Paid via Razorpay!
+                    {rideStage === "SEARCHING" && "Locating nearest driver..."}
+                    {rideStage === "ASSIGNED" && "Driver Confirmed!"}
+                    {rideStage === "ARRIVING" && "Driver Arriving (2 mins)"}
+                    {rideStage === "ON_TRIP" && "Trip in progress to Destination"}
+                    {rideStage === "COMPLETED" && "Trip Completed!"}
                   </span>
                 </div>
                 <span className="text-xs font-mono text-neutral-400">#{activeRide.id}</span>
               </div>
 
-              <div className="p-4 rounded-xl bg-neutral-900 border border-neutral-800 space-y-2 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-neutral-400">Payment ID:</span>
-                  <span className="font-mono text-emerald-400">{activeRide.paymentId}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-neutral-400">Fare Paid:</span>
-                  <span className="font-bold text-white">₹{activeRide.fare}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-neutral-400">Driver Dispatch:</span>
-                  <span className="font-semibold text-white">Assigning nearest partner (2 mins)</span>
-                </div>
-              </div>
+              {/* Driver Details Card (Use Case 4 & 5) */}
+              {(rideStage === "ASSIGNED" ||
+                rideStage === "ARRIVING" ||
+                rideStage === "ON_TRIP" ||
+                rideStage === "COMPLETED") && (
+                <div className="p-4 rounded-2xl bg-neutral-900 border border-neutral-800 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="h-12 w-12 rounded-full bg-neutral-800 border-2 border-white/20 flex items-center justify-center font-bold text-white text-base">
+                        DC
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <h4 className="text-sm font-bold text-white">David Chen</h4>
+                          <span className="text-[11px] text-amber-400 flex items-center gap-0.5 font-bold">
+                            <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                            4.92
+                          </span>
+                        </div>
+                        <p className="text-xs text-neutral-400">Toyota Camry · White</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <span className="inline-block px-2.5 py-1 rounded-lg bg-neutral-800 border border-neutral-700 text-xs font-mono font-bold text-white">
+                        DL 01 AB 8842
+                      </span>
+                    </div>
+                  </div>
 
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setActiveRide(null)}
-                  className="flex-1 py-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-xs font-bold text-neutral-200 transition"
+                  <div className="flex items-center justify-between pt-2 border-t border-neutral-800 text-xs">
+                    <span className="text-neutral-400">Paid via Razorpay:</span>
+                    <span className="font-mono text-emerald-400">₹{activeRide.fare} ({activeRide.paymentId})</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Action Buttons: Cancel Ride or Rate Trip */}
+              <div className="flex items-center gap-2 pt-1">
+                {rideStage !== "COMPLETED" ? (
+                  <button
+                    onClick={() => setIsCancelModalOpen(true)}
+                    className="flex-1 py-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-xs font-bold text-neutral-200 transition"
+                  >
+                    Cancel Ride
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setIsRatingModalOpen(true)}
+                    className="flex-1 py-2.5 rounded-xl bg-white text-black hover:bg-neutral-200 text-xs font-extrabold transition shadow-md flex items-center justify-center gap-1.5"
+                  >
+                    <Star className="h-3.5 w-3.5 fill-black" />
+                    Rate Driver & Leave Tip
+                  </button>
+                )}
+
+                <a
+                  href="tel:+919876543210"
+                  className="px-4 py-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white text-xs font-bold transition flex items-center gap-1.5"
                 >
-                  Cancel Ride (Free)
-                </button>
+                  <Phone className="h-3.5 w-3.5" />
+                  Call Driver
+                </a>
               </div>
             </div>
           )}
@@ -486,13 +616,14 @@ export function RideSection({
               <span>Door-to-door safety standard</span>
             </div>
             {sosActive ? (
-              <span className="text-xs font-bold text-rose-600 animate-pulse">
+              <span className="text-xs font-bold text-rose-600 animate-pulse flex items-center gap-1">
+                <ShieldAlert className="h-3.5 w-3.5" />
                 Emergency Alert Broadcasted!
               </span>
             ) : (
               <button
                 onClick={handleTriggerSOS}
-                className="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs flex items-center gap-1.5 transition"
+                className="px-3.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs flex items-center gap-1.5 transition shadow-sm"
               >
                 <AlertTriangle className="h-3.5 w-3.5" />
                 Emergency SOS
@@ -508,10 +639,35 @@ export function RideSection({
               stops={stops}
               routeCoordinates={routeCoordinates}
               nearbyDrivers={nearbyDrivers}
+              activeDriverCoords={currentDriverCoords}
+              driverName="David Chen (Uber)"
             />
           </div>
         </div>
       </div>
+
+      {/* Cancellation Modal (Use Case 8) */}
+      <CancelModal
+        isOpen={isCancelModalOpen}
+        onClose={() => setIsCancelModalOpen(false)}
+        rideId={activeRide?.id}
+        onCancelled={() => {
+          setActiveRide(null);
+          setRideStage("IDLE");
+        }}
+      />
+
+      {/* Driver Rating & Review Modal (Use Case 9) */}
+      <RatingModal
+        isOpen={isRatingModalOpen}
+        onClose={() => setIsRatingModalOpen(false)}
+        rideId={activeRide?.id}
+        driverName="David Chen"
+        onSubmitted={() => {
+          setActiveRide(null);
+          setRideStage("IDLE");
+        }}
+      />
     </div>
   );
 }

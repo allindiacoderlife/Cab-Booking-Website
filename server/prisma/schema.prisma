@@ -1,6 +1,7 @@
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 generator client {
@@ -36,6 +37,20 @@ enum PaymentStatus {
   REFUNDED
 }
 
+enum TicketCategory {
+  TRIP_FARE
+  LOST_ITEM
+  DRIVER_FEEDBACK
+  ACCOUNT_PAYMENT
+  SAFETY_EMERGENCY
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+}
+
 model User {
   id               String             @id @default(uuid())
   supabaseId       String?            @unique
@@ -49,6 +64,7 @@ model User {
   driverProfile    DriverProfile?
   ridesAsRider     Ride[]             @relation("RiderRides")
   emergencyContact EmergencyContact?
+  supportTickets   SupportTicket[]
 
   @@map("users")
 }
@@ -100,6 +116,7 @@ model Ride {
   stops           RideStop[]
   payment         Payment?
   review          Review?
+  supportTickets  SupportTicket[]
 
   @@map("rides")
 }
@@ -156,4 +173,20 @@ model EmergencyContact {
   updatedAt    DateTime @updatedAt
 
   @@map("emergency_contacts")
+}
+
+model SupportTicket {
+  id        String         @id @default(uuid())
+  userId    String?
+  user      User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  rideId    String?
+  ride      Ride?          @relation(fields: [rideId], references: [id], onDelete: SetNull)
+  category  TicketCategory @default(TRIP_FARE)
+  subject   String
+  message   String
+  status    TicketStatus   @default(OPEN)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@map("support_tickets")
 }

@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import { AuthProvider, useAuth } from "./context/AuthContext";
-import { Navbar } from "./components/Navbar";
+import { Navbar, type NavTab } from "./components/Navbar";
 import { Hero } from "./components/Hero";
 import { RideSection } from "./components/RideSection";
 import { DriveSection } from "./components/DriveSection";
+import { ActivitySection } from "./components/ActivitySection";
+import { SupportSection } from "./components/SupportSection";
 import { AuthModal } from "./components/AuthModal";
+import { ProfileModal } from "./components/ProfileModal";
+import { RatingModal } from "./components/RatingModal";
 import { Footer } from "./components/Footer";
 import {
   Car,
@@ -21,9 +25,17 @@ import {
 
 function MainContent() {
   const { role } = useAuth();
-  const [activeTab, setActiveTab] = useState<"home" | "ride" | "drive" | "about">("home");
+  const [activeTab, setActiveTab] = useState<NavTab>("home");
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+
+  // Rating modal state for past trips from ActivitySection
+  const [ratingModalOpen, setRatingModalOpen] = useState(false);
+  const [ratingRideInfo, setRatingRideInfo] = useState<{ id: string; driver: string }>({
+    id: "UBER-TRIP",
+    driver: "David Chen",
+  });
 
   const [selectedPickup, setSelectedPickup] = useState("Connaught Place, New Delhi");
   const [selectedDropoff, setSelectedDropoff] = useState("Indira Gandhi International Airport (DEL)");
@@ -43,6 +55,11 @@ function MainContent() {
     setAuthModalOpen(true);
   };
 
+  const handleRatePastTrip = (rideId: string, driverName: string) => {
+    setRatingRideInfo({ id: rideId, driver: driverName });
+    setRatingModalOpen(true);
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-white text-black font-sans selection:bg-black selection:text-white">
       {/* Official Uber Navbar */}
@@ -50,6 +67,7 @@ function MainContent() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onOpenAuth={handleOpenAuth}
+        onOpenProfile={() => setProfileModalOpen(true)}
       />
 
       <main className="flex-1">
@@ -183,7 +201,15 @@ function MainContent() {
         {/* TAB 3: DRIVE SECTION */}
         {activeTab === "drive" && <DriveSection />}
 
-        {/* TAB 4: ABOUT & ARCHITECTURE SECTION */}
+        {/* TAB 4: ACTIVITY & RECEIPTS (Use Case 6 & 7) */}
+        {activeTab === "activity" && (
+          <ActivitySection onRateTrip={handleRatePastTrip} />
+        )}
+
+        {/* TAB 5: HELP & SUPPORT (Use Case 13) */}
+        {activeTab === "support" && <SupportSection />}
+
+        {/* TAB 6: ABOUT & ARCHITECTURE SECTION */}
         {activeTab === "about" && (
           <div className="max-w-5xl mx-auto px-4 py-16 space-y-8">
             <div className="text-center space-y-2">
@@ -250,6 +276,20 @@ function MainContent() {
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
         initialMode={authMode}
+      />
+
+      {/* User Account & Emergency Contact Profile Modal */}
+      <ProfileModal
+        isOpen={profileModalOpen}
+        onClose={() => setProfileModalOpen(false)}
+      />
+
+      {/* Driver Rating & Review Modal */}
+      <RatingModal
+        isOpen={ratingModalOpen}
+        onClose={() => setRatingModalOpen(false)}
+        rideId={ratingRideInfo.id}
+        driverName={ratingRideInfo.driver}
       />
     </div>
   );

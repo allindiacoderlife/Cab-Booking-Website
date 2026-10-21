@@ -8,6 +8,8 @@ interface MapProps {
   stops?: { lat: number; lng: number }[];
   routeCoordinates?: [number, number][];
   nearbyDrivers?: { id: string; lat: number; lng: number; angle: number }[];
+  activeDriverCoords?: [number, number];
+  driverName?: string;
 }
 
 export function Map({
@@ -16,6 +18,8 @@ export function Map({
   stops = [],
   routeCoordinates = [],
   nearbyDrivers = [],
+  activeDriverCoords,
+  driverName = "David Chen",
 }: MapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -132,7 +136,31 @@ export function Map({
       L.marker([driver.lat, driver.lng], { icon: driverIcon }).addTo(layers);
     });
 
-    // 5. Draw Route Line
+    // 5. Active Dispatched Driver (when ride is in progress)
+    if (activeDriverCoords) {
+      const activeCarIcon = L.divIcon({
+        className: "uber-active-driver-marker",
+        html: `
+          <div class="relative flex flex-col items-center justify-center animate-bounce-short">
+            <div class="absolute -top-6 whitespace-nowrap bg-black text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-lg border border-neutral-700">
+              ${driverName}
+            </div>
+            <div class="h-10 w-10 rounded-full bg-black border-2 border-emerald-400 shadow-2xl flex items-center justify-center text-white ring-4 ring-emerald-400/30">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.85 7h10.29l1.04 3H5.81l1.04-3zM19 17H5v-4.66l.12-.34h13.77l.11.34V17z"/>
+                <circle cx="7.5" cy="14.5" r="1.5"/>
+                <circle cx="16.5" cy="14.5" r="1.5"/>
+              </svg>
+            </div>
+          </div>
+        `,
+        iconSize: [40, 40],
+        iconAnchor: [20, 20],
+      });
+      L.marker(activeDriverCoords, { icon: activeCarIcon }).addTo(layers);
+    }
+
+    // 6. Draw Route Line
     if (polylineRef.current) {
       map.removeLayer(polylineRef.current);
       polylineRef.current = null;
@@ -153,7 +181,7 @@ export function Map({
       const bounds = L.latLngBounds([pickupCoords, dropoffCoords]);
       map.fitBounds(bounds, { padding: [60, 60] });
     }
-  }, [pickupCoords, dropoffCoords, stops, routeCoordinates, nearbyDrivers]);
+  }, [pickupCoords, dropoffCoords, stops, routeCoordinates, nearbyDrivers, activeDriverCoords, driverName]);
 
   return (
     <div className="relative w-full h-full min-h-[460px] rounded-3xl overflow-hidden border border-neutral-200 shadow-xl bg-neutral-100">
