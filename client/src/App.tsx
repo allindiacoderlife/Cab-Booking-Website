@@ -268,8 +268,8 @@ function MainContent() {
         )}
       </main>
 
-      {/* Official Uber Footer */}
-      <Footer />
+      {/* Official Uber Footer (Hidden on full-screen Ride map mode) */}
+      {activeTab !== "ride" && <Footer />}
 
       {/* Login & Sign Up Modal */}
       <AuthModal

@@ -10,6 +10,7 @@ interface MapProps {
   nearbyDrivers?: { id: string; lat: number; lng: number; angle: number }[];
   activeDriverCoords?: [number, number];
   driverName?: string;
+  className?: string;
 }
 
 export function Map({
@@ -20,6 +21,7 @@ export function Map({
   nearbyDrivers = [],
   activeDriverCoords,
   driverName = "David Chen",
+  className = "relative w-full h-full min-h-[350px] overflow-hidden bg-neutral-100",
 }: MapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -51,11 +53,23 @@ export function Map({
     mapInstanceRef.current = map;
 
     // Trigger invalidateSize after initial layout render to guarantee full tile coverage
-    setTimeout(() => {
+    const t1 = setTimeout(() => {
       map.invalidateSize();
-    }, 250);
+    }, 200);
+
+    const t2 = setTimeout(() => {
+      map.invalidateSize();
+    }, 600);
+
+    const handleResize = () => {
+      map.invalidateSize();
+    };
+    window.addEventListener("resize", handleResize);
 
     return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      window.removeEventListener("resize", handleResize);
       map.remove();
       mapInstanceRef.current = null;
     };
@@ -160,7 +174,7 @@ export function Map({
       L.marker(activeDriverCoords, { icon: activeCarIcon }).addTo(layers);
     }
 
-    // 6. Draw Route Line
+    // 6. Draw Route Line & Fit Bounds
     if (polylineRef.current) {
       map.removeLayer(polylineRef.current);
       polylineRef.current = null;
@@ -176,15 +190,16 @@ export function Map({
       }).addTo(map);
 
       polylineRef.current = poly;
-      map.fitBounds(poly.getBounds(), { padding: [50, 50] });
+      map.fitBounds(poly.getBounds(), { padding: [60, 60], maxZoom: 14 });
     } else {
-      const bounds = L.latLngBounds([pickupCoords, dropoffCoords]);
-      map.fitBounds(bounds, { padding: [60, 60] });
+      const allCoords: [number, number][] = [pickupCoords, ...stops.map((s) => [s.lat, s.lng] as [number, number]), dropoffCoords];
+      const bounds = L.latLngBounds(allCoords);
+      map.fitBounds(bounds, { padding: [60, 60], maxZoom: 14 });
     }
   }, [pickupCoords, dropoffCoords, stops, routeCoordinates, nearbyDrivers, activeDriverCoords, driverName]);
 
   return (
-    <div className="relative w-full h-full min-h-[460px] rounded-3xl overflow-hidden border border-neutral-200 shadow-xl bg-neutral-100">
+    <div className={className}>
       <div ref={mapContainerRef} className="w-full h-full z-0" />
     </div>
   );
