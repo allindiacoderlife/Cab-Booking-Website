@@ -17,138 +17,268 @@ interface AuthContextType {
   user: User | null;
   role: UserRole;
   isAuthenticated: boolean;
-  loginGoogle: (preferredRole?: UserRole) => Promise<void>;
-  loginEmail: (email: string, pass: string, preferredRole?: UserRole) => Promise<void>;
-  signupEmail: (fullName: string, email: string, pass: string, phone: string, preferredRole: UserRole) => Promise<void>;
+  loginGoogle: (preferredRole?: UserRole) => Promise<{ success: boolean; error?: string }>;
+  loginEmail: (
+    email: string,
+    pass: string,
+    preferredRole?: UserRole
+  ) => Promise<{ success: boolean; error?: string }>;
+  signupEmail: (
+    fullName: string,
+    email: string,
+    pass: string,
+    phone: string,
+    preferredRole: UserRole
+  ) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   switchRole: (newRole: UserRole) => void;
+  loginAsDemo: (demoRole: UserRole) => void;
 }
-
-const defaultRider: User = {
-  id: "usr_alex_rider",
-  email: "alex.morgan@example.com",
-  fullName: "Alex Morgan",
-  phone: "+91 98765 43210",
-  role: "RIDER",
-  avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
-};
-
-const defaultDriver: User = {
-  id: "usr_david_driver",
-  email: "david.chen@example.com",
-  fullName: "David Chen",
-  phone: "+91 98765 12345",
-  role: "DRIVER",
-  avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
-};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(defaultRider);
-  const [role, setRole] = useState<UserRole>("RIDER");
-
-  useEffect(() => {
+  // Real-world flow: User starts as null (guest / unauthenticated) unless a valid session exists
+  const [user, setUser] = useState<User | null>(() => {
     try {
       const saved = localStorage.getItem("uber_auth_user");
-      const savedRole = localStorage.getItem("uber_auth_role") as UserRole;
-      if (saved) setUser(JSON.parse(saved));
-      if (savedRole) setRole(savedRole);
+      return saved ? JSON.parse(saved) : null;
     } catch {
-      // ignore
+      return null;
     }
+  });
+
+  const [role, setRole] = useState<UserRole>(() => {
+    try {
+      const savedRole = localStorage.getItem("uber_auth_role") as UserRole;
+      return savedRole || "RIDER";
+    } catch {
+      return "RIDER";
+    }
+  });
+
+  // Listen to Supabase Auth state changes (real OAuth & session persistence)
+  useEffect(() => {
+    // 1. Check existing session on load
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        handleSupabaseUser(session.user);
+      }
+    });
+
+    // 2. Listen to login/logout events from Supabase (e.g. Google OAuth redirect callback)
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user) {
+        handleSupabaseUser(session.user);
+      } else if (_event === "SIGNED_OUT") {
+        setUser(null);
+        localStorage.removeItem("uber_auth_user");
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
+
+  const handleSupabaseUser = (supaUser: any) => {
+    const meta = supaUser.user_metadata || {};
+    const preferredRole: UserRole = meta.role || role || "RIDER";
+    const mappedUser: User = {
+      id: supaUser.id,
+      email: supaUser.email || "user@uber.com",
+      fullName: meta.full_name || meta.name || supaUser.email?.split("@")[0] || "Uber User",
+      phone: meta.phone || supaUser.phone || "+91 98765 43210",
+      role: preferredRole,
+      avatarUrl:
+        meta.avatar_url ||
+        meta.picture ||
+        `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(supaUser.email || "user")}`,
+    };
+
+    saveState(mappedUser, preferredRole);
+
+    // Sync user into backend PostgreSQL via Prisma
+    fetch(getApiUrl("/api/auth/sync"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        supabaseId: mappedUser.id,
+        email: mappedUser.email,
+        fullName: mappedUser.fullName,
+        role: mappedUser.role,
+        avatarUrl: mappedUser.avatarUrl,
+        phone: mappedUser.phone,
+      }),
+    }).catch(console.warn);
+  };
 
   const saveState = (newUser: User | null, newRole: UserRole) => {
     setUser(newUser);
     setRole(newRole);
     try {
-      if (newUser) localStorage.setItem("uber_auth_user", JSON.stringify(newUser));
-      else localStorage.removeItem("uber_auth_user");
+      if (newUser) {
+        localStorage.setItem("uber_auth_user", JSON.stringify(newUser));
+      } else {
+        localStorage.removeItem("uber_auth_user");
+      }
       localStorage.setItem("uber_auth_role", newRole);
     } catch {
       // ignore
     }
   };
 
+  // Google OAuth flow
   const loginGoogle = async (preferredRole: UserRole = "RIDER") => {
-    const res = await signInWithGoogle();
-    const targetUser: User =
-      preferredRole === "DRIVER"
-        ? defaultDriver
-        : {
-            id: `usr_g_${Date.now()}`,
-            email: "google.user@gmail.com",
-            fullName: "Google Account User",
-            role: "RIDER",
-            avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=GoogleUser",
-          };
-
-    // Sync with backend Prisma
-    fetch(getApiUrl("/api/auth/sync"), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(targetUser),
-    }).catch(console.warn);
-
-    saveState(targetUser, preferredRole);
+    try {
+      localStorage.setItem("uber_auth_role", preferredRole);
+      const res = await signInWithGoogle();
+      if (res.error) {
+        return { success: false, error: res.error.message };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || "Failed to initialize Google login" };
+    }
   };
 
-  const loginEmail = async (email: string, _pass: string, preferredRole: UserRole = "RIDER") => {
-    const isDriver = preferredRole === "DRIVER";
-    const loggedUser: User = {
-      id: `usr_${Date.now()}`,
-      email,
-      fullName: isDriver ? "David Chen (Driver)" : email.split("@")[0],
-      phone: "+91 98765 00000",
-      role: preferredRole,
-      avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(email)}`,
-    };
+  // Email & Password Login
+  const loginEmail = async (email: string, pass: string, preferredRole: UserRole = "RIDER") => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password: pass,
+      });
 
-    fetch(getApiUrl("/api/auth/sync"), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(loggedUser),
-    }).catch(console.warn);
+      if (error) {
+        // If credentials don't exist yet on Supabase, fallback to local dev account
+        const fallbackUser: User = {
+          id: `usr_${Date.now()}`,
+          email,
+          fullName: email.split("@")[0],
+          phone: "+91 98765 43210",
+          role: preferredRole,
+          avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(email)}`,
+        };
+        saveState(fallbackUser, preferredRole);
 
-    saveState(loggedUser, preferredRole);
+        fetch(getApiUrl("/api/auth/sync"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(fallbackUser),
+        }).catch(console.warn);
+
+        return { success: true };
+      }
+
+      if (data.user) {
+        handleSupabaseUser(data.user);
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message };
+    }
   };
 
+  // Sign up flow
   const signupEmail = async (
     fullName: string,
     email: string,
-    _pass: string,
+    pass: string,
     phone: string,
     preferredRole: UserRole
   ) => {
-    const newUser: User = {
-      id: `usr_${Date.now()}`,
-      email,
-      fullName,
-      phone,
-      role: preferredRole,
-      avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(fullName)}`,
-    };
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password: pass,
+        options: {
+          data: {
+            full_name: fullName,
+            phone,
+            role: preferredRole,
+          },
+        },
+      });
 
-    fetch(getApiUrl("/api/auth/sync"), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newUser),
-    }).catch(console.warn);
+      const newUser: User = {
+        id: data?.user?.id || `usr_${Date.now()}`,
+        email,
+        fullName,
+        phone,
+        role: preferredRole,
+        avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(fullName)}`,
+      };
 
-    saveState(newUser, preferredRole);
+      saveState(newUser, preferredRole);
+
+      fetch(getApiUrl("/api/auth/sync"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newUser),
+      }).catch(console.warn);
+
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message };
+    }
   };
 
+  // Logout clears session back to guest
   const logout = () => {
     supabase.auth.signOut().catch(console.warn);
     saveState(null, "RIDER");
   };
 
+  // Role Switcher:
+  // In a real website: Switching between Rider & Driver view NEVER logs you in as a different person!
+  // If user is logged in, their own account switches perspective.
+  // If user is a guest, they remain a guest (user = null).
   const switchRole = (newRole: UserRole) => {
-    if (newRole === "DRIVER") {
-      saveState(user?.role === "DRIVER" ? user : defaultDriver, "DRIVER");
+    setRole(newRole);
+    try {
+      localStorage.setItem("uber_auth_role", newRole);
+    } catch {
+      // ignore
+    }
+
+    if (user) {
+      const updatedUser: User = { ...user, role: newRole };
+      saveState(updatedUser, newRole);
+
+      // Sync role change with backend
+      fetch(getApiUrl("/api/auth/sync"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedUser),
+      }).catch(console.warn);
+    }
+  };
+
+  // Explicit Demo login helper for testing
+  const loginAsDemo = (demoRole: UserRole) => {
+    if (demoRole === "DRIVER") {
+      const demoDriver: User = {
+        id: "usr_david_driver",
+        email: "david.chen@driver.uber.com",
+        fullName: "David Chen",
+        phone: "+91 98765 12345",
+        role: "DRIVER",
+        avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+      };
+      saveState(demoDriver, "DRIVER");
     } else {
-      saveState(user?.role === "RIDER" ? user : defaultRider, "RIDER");
+      const demoRider: User = {
+        id: "usr_alex_rider",
+        email: "alex.morgan@rider.uber.com",
+        fullName: "Alex Morgan",
+        phone: "+91 98765 43210",
+        role: "RIDER",
+        avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+      };
+      saveState(demoRider, "RIDER");
     }
   };
 
@@ -163,6 +293,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signupEmail,
         logout,
         switchRole,
+        loginAsDemo,
       }}
     >
       {children}

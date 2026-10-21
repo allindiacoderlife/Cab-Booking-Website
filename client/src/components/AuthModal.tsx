@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth, type UserRole } from "../context/AuthContext";
-import { X, ArrowRight, ShieldCheck, Mail, Lock, User, Phone, Car } from "lucide-react";
+import { X, ArrowRight, ShieldCheck, Mail, Lock, User, Phone, Car, AlertCircle } from "lucide-react";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -9,7 +9,7 @@ interface AuthModalProps {
 }
 
 export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalProps) {
-  const { loginGoogle, loginEmail, signupEmail } = useAuth();
+  const { loginGoogle, loginEmail, signupEmail, loginAsDemo } = useAuth();
   const [mode, setMode] = useState<"login" | "signup">(initialMode);
   const [role, setRole] = useState<UserRole>("RIDER");
 
@@ -18,40 +18,52 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   if (!isOpen) return null;
 
   const handleGoogleAuth = async () => {
     setLoading(true);
-    await loginGoogle(role);
+    setErrorMessage("");
+    const res = await loginGoogle(role);
     setLoading(false);
-    onClose();
+    if (res.error) {
+      setErrorMessage(res.error);
+    } else {
+      onClose();
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setErrorMessage("");
     if (mode === "login") {
-      await loginEmail(email || "rider@example.com", password || "pass123", role);
+      const res = await loginEmail(email, password, role);
+      if (!res.success && res.error) {
+        setErrorMessage(res.error);
+      } else {
+        onClose();
+      }
     } else {
-      await signupEmail(
-        fullName || "New Uber User",
-        email || "new@example.com",
-        password || "pass123",
-        phone || "+91 98765 00000",
+      const res = await signupEmail(
+        fullName,
+        email,
+        password,
+        phone,
         role
       );
+      if (!res.success && res.error) {
+        setErrorMessage(res.error);
+      } else {
+        onClose();
+      }
     }
     setLoading(false);
-    onClose();
   };
 
   const handleQuickDemo = (demoRole: UserRole) => {
-    if (demoRole === "DRIVER") {
-      loginEmail("david.chen@driver.uber.com", "pass", "DRIVER");
-    } else {
-      loginEmail("alex.morgan@rider.uber.com", "pass", "RIDER");
-    }
+    loginAsDemo(demoRole);
     onClose();
   };
 
@@ -70,11 +82,19 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
         <div className="text-2xl font-black tracking-tighter mb-4 text-black">Uber</div>
 
         <h2 className="text-2xl font-black text-black tracking-tight mb-2">
-          {mode === "login" ? "What's your phone number or email?" : "Sign up with Uber"}
+          {mode === "login" ? "Sign in to your account" : "Create your Uber account"}
         </h2>
         <p className="text-xs text-neutral-500 mb-6">
           Access your rides, earnings, and trip receipts with Supabase authentication.
         </p>
+
+        {/* Error Alert */}
+        {errorMessage && (
+          <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
+            <AlertCircle className="h-4 w-4 shrink-0" />
+            <span>{errorMessage}</span>
+          </div>
+        )}
 
         {/* Role Selector: Rider vs Driver */}
         <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-neutral-100 mb-5">
@@ -100,14 +120,13 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
           </button>
         </div>
 
-        {/* Continue with Google (Prominent Official Google Auth Button) */}
+        {/* Continue with Google */}
         <button
           type="button"
           disabled={loading}
           onClick={handleGoogleAuth}
-          className="w-full py-3.5 px-4 rounded-xl border border-neutral-300 hover:border-black bg-white font-bold text-xs flex items-center justify-center gap-3 transition shadow-sm mb-4"
+          className="w-full py-3.5 px-4 rounded-xl border border-neutral-300 hover:border-black bg-white font-bold text-xs flex items-center justify-center gap-3 transition shadow-sm mb-4 disabled:opacity-50"
         >
-          {/* Official Google 'G' icon */}
           <svg className="h-4 w-4" viewBox="0 0 24 24">
             <path
               fill="#4285F4"
@@ -135,7 +154,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
             <div className="w-full border-t border-neutral-200" />
           </div>
           <span className="relative bg-white px-3 text-[11px] uppercase tracking-wider text-neutral-400 font-bold">
-            or
+            or with email
           </span>
         </div>
 
@@ -158,7 +177,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="Phone number (+91)"
+                  placeholder="Phone number (+91 98765 43210)"
                   className="w-full px-4 py-3 rounded-xl bg-neutral-100 border border-transparent focus:border-black text-xs font-semibold text-black placeholder-neutral-500 focus:outline-none"
                   required
                 />
@@ -191,17 +210,17 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 rounded-xl bg-black hover:bg-neutral-800 text-white font-bold text-xs flex items-center justify-center gap-2 transition shadow-lg mt-2"
+            className="w-full py-3.5 rounded-xl bg-black hover:bg-neutral-800 text-white font-bold text-xs flex items-center justify-center gap-2 transition shadow-lg mt-2 disabled:opacity-50"
           >
-            <span>{mode === "login" ? "Continue" : "Create Account"}</span>
+            <span>{loading ? "Processing..." : mode === "login" ? "Sign In" : "Create Account"}</span>
             <ArrowRight className="h-4 w-4" />
           </button>
         </form>
 
-        {/* Quick Demo Shortcuts */}
+        {/* Quick Demo Shortcuts for instant testing */}
         <div className="mt-4 pt-3 border-t border-neutral-100">
           <span className="text-[10px] uppercase font-bold text-neutral-400 block mb-2">
-            Instant Test Accounts
+            One-Click Testing Accounts
           </span>
           <div className="grid grid-cols-2 gap-2">
             <button
@@ -209,14 +228,14 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
               onClick={() => handleQuickDemo("RIDER")}
               className="p-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-800 text-[11px] font-bold transition flex items-center justify-center gap-1"
             >
-              <User className="h-3 w-3" /> Alex (Rider)
+              <User className="h-3 w-3" /> Demo Rider (Alex)
             </button>
             <button
               type="button"
               onClick={() => handleQuickDemo("DRIVER")}
               className="p-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-800 text-[11px] font-bold transition flex items-center justify-center gap-1"
             >
-              <Car className="h-3 w-3" /> David (Driver)
+              <Car className="h-3 w-3" /> Demo Driver (David)
             </button>
           </div>
         </div>
@@ -227,6 +246,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
             <p>
               Don't have an account?{" "}
               <button
+                type="button"
                 onClick={() => setMode("signup")}
                 className="font-bold text-black hover:underline"
               >
@@ -237,6 +257,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
             <p>
               Already have an account?{" "}
               <button
+                type="button"
                 onClick={() => setMode("login")}
                 className="font-bold text-black hover:underline"
               >

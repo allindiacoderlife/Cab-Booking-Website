@@ -199,7 +199,7 @@ function MainContent() {
         )}
 
         {/* TAB 3: DRIVE SECTION */}
-        {activeTab === "drive" && <DriveSection />}
+        {activeTab === "drive" && <DriveSection onOpenAuth={handleOpenAuth} />}
 
         {/* TAB 4: ACTIVITY & RECEIPTS (Use Case 6 & 7) */}
         {activeTab === "activity" && (
